@@ -1,4 +1,8 @@
 {
   "@@locale": "en",
-  "appTitle": "Rick and Morty"
+  "appTitle": "Rick and Morty",
+  "loginTitle": "Welcome",
+  "loginSubtitle": "Enter any name to explore the multiverse",
+  "loginNameLabel": "Username",
+  "loginSignInButton": "Sign In"
 }

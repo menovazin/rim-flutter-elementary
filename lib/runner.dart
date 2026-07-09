@@ -9,7 +9,7 @@ void runner() {
 
   configureDependencies();
 
-  final router = AppRouter();
+  final router = getIt<AppRouter>();
 
   runApp(App(router: router));
 }

@@ -32,9 +32,11 @@ import 'package:rim_elementary/features/locations/data/repository/location_repos
     as _i895;
 import 'package:rim_elementary/features/locations/domain/contract/location_repository.dart'
     as _i700;
+import 'package:rim_elementary/routes/router.dart' as _i897;
 import 'package:rim_elementary/services/error_handler.dart' as _i1044;
 import 'package:rim_elementary/services/network/chopper_factory.dart' as _i263;
 import 'package:rim_elementary/services/network/dio_factory.dart' as _i10;
+import 'package:rim_elementary/services/token_service.dart' as _i218;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -43,9 +45,11 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final servicesModule = _$ServicesModule();
     final dioFactory = _$DioFactory();
     final chopperFactory = _$ChopperFactory();
-    final servicesModule = _$ServicesModule();
+    gh.lazySingleton<_i218.ITokenService>(() => servicesModule.tokenService());
+    gh.lazySingleton<_i897.AppRouter>(() => servicesModule.appRouter());
     gh.lazySingleton<_i361.Dio>(() => dioFactory.create());
     gh.lazySingleton<_i31.ChopperClient>(
       () => chopperFactory.create(gh<_i361.Dio>()),
@@ -82,8 +86,8 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
+class _$ServicesModule extends _i407.ServicesModule {}
+
 class _$DioFactory extends _i10.DioFactory {}
 
 class _$ChopperFactory extends _i263.ChopperFactory {}
-
-class _$ServicesModule extends _i407.ServicesModule {}

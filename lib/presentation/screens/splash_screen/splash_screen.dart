@@ -1,6 +1,7 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import 'splash_screen_widget_model.dart';
 
 class SplashScreen extends ElementaryWidget<ISplashWidgetModel> {
@@ -11,10 +12,21 @@ class SplashScreen extends ElementaryWidget<ISplashWidgetModel> {
 
   @override
   Widget build(ISplashWidgetModel wm) {
+    return const _SplashBody();
+  }
+}
+
+class _SplashBody extends StatelessWidget {
+  const _SplashBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Center(
         child: Text(
-          wm.title,
+          l10n.appTitle,
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
       ),

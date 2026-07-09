@@ -10,4 +10,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appTitle => 'Rick and Morty';
+
+  @override
+  String get loginTitle => 'Welcome';
+
+  @override
+  String get loginSubtitle => 'Enter any name to explore the multiverse';
+
+  @override
+  String get loginNameLabel => 'Username';
+
+  @override
+  String get loginSignInButton => 'Sign In';
 }
