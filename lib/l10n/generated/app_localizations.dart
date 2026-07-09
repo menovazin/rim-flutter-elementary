@@ -147,6 +147,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign Out'**
   String get menuSignOut;
+
+  /// No description provided for @detailSpecies.
+  ///
+  /// In en, this message translates to:
+  /// **'Species'**
+  String get detailSpecies;
+
+  /// No description provided for @detailType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get detailType;
+
+  /// No description provided for @detailGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get detailGender;
+
+  /// No description provided for @detailOrigin.
+  ///
+  /// In en, this message translates to:
+  /// **'Origin'**
+  String get detailOrigin;
+
+  /// No description provided for @detailLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get detailLocation;
+
+  /// No description provided for @sectionEpisodesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes ({count})'**
+  String sectionEpisodesCount(int count);
+
+  /// No description provided for @retryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryButton;
+
+  /// No description provided for @errorLoadingCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading characters'**
+  String get errorLoadingCharacters;
 }
 
 class _AppLocalizationsDelegate

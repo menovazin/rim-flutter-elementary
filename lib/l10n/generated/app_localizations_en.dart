@@ -34,4 +34,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get menuSignOut => 'Sign Out';
+
+  @override
+  String get detailSpecies => 'Species';
+
+  @override
+  String get detailType => 'Type';
+
+  @override
+  String get detailGender => 'Gender';
+
+  @override
+  String get detailOrigin => 'Origin';
+
+  @override
+  String get detailLocation => 'Location';
+
+  @override
+  String sectionEpisodesCount(int count) {
+    return 'Episodes ($count)';
+  }
+
+  @override
+  String get retryButton => 'Retry';
+
+  @override
+  String get errorLoadingCharacters => 'Error loading characters';
 }

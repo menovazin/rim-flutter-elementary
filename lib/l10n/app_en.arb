@@ -8,5 +8,20 @@
   "tabCharacters": "Characters",
   "tabEpisodes": "Episodes",
   "tabLocations": "Locations",
-  "menuSignOut": "Sign Out"
+  "menuSignOut": "Sign Out",
+  "detailSpecies": "Species",
+  "detailType": "Type",
+  "detailGender": "Gender",
+  "detailOrigin": "Origin",
+  "detailLocation": "Location",
+  "sectionEpisodesCount": "Episodes ({count})",
+  "@sectionEpisodesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "retryButton": "Retry",
+  "errorLoadingCharacters": "Error loading characters"
 }
