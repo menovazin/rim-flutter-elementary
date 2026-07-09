@@ -1,14 +1,14 @@
-import 'package:chopper/chopper.dart';
+import 'package:dio/dio.dart';
+import 'package:retrofit/retrofit.dart';
 
 import '../dto/location_dto.dart';
 
-part 'location_service.chopper.dart';
+part 'location_service.g.dart';
 
-@ChopperApi(baseUrl: '/location')
-abstract class LocationService extends ChopperService {
-  static LocationService create([ChopperClient? client]) =>
-      _$LocationService(client);
+@RestApi()
+abstract class LocationService {
+  factory LocationService(Dio dio, {String? baseUrl}) = _LocationService;
 
-  @GET()
-  Future<Response<LocationResponseDto>> getLocations(@Query() int page);
+  @GET('')
+  Future<LocationResponseDto> getLocations(@Query('page') int page);
 }

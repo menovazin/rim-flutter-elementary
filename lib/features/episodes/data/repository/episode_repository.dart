@@ -19,18 +19,13 @@ class EpisodeRepository implements IEpisodeRepository {
   @override
   Future<PageResult<Episode>> getEpisodes(int page) async {
     try {
-      final response = await _service.getEpisodes(page);
-      final body = response.body;
-
-      if (body == null) {
-        throw AppException(const AppError.server());
-      }
+      final dto = await _service.getEpisodes(page);
 
       return PageResult<Episode>(
-        items: mapEpisodeList(body.results),
+        items: mapEpisodeList(dto.results),
         page: page,
-        totalPages: body.info.pages,
-        hasNext: body.info.next != null,
+        totalPages: dto.info.pages,
+        hasNext: dto.info.next != null,
       );
     } on DioException catch (e) {
       throw AppException(_errorHandler.map(e));

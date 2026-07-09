@@ -1,7 +1,5 @@
-import 'package:chopper/chopper.dart' as chopper;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:rim_elementary/features/common/data/dto/info_dto.dart';
 import 'package:rim_elementary/features/episodes/data/api/episode_service.dart';
@@ -45,10 +43,7 @@ void main() {
       );
 
       when(() => service.getEpisodes(1)).thenAnswer(
-        (_) async => chopper.Response<EpisodeResponseDto>(
-          http.Response('', 200),
-          responseDto,
-        ),
+        (_) async => responseDto,
       );
 
       final result = await repository.getEpisodes(1);
@@ -68,10 +63,7 @@ void main() {
       );
 
       when(() => service.getEpisodes(3)).thenAnswer(
-        (_) async => chopper.Response<EpisodeResponseDto>(
-          http.Response('', 200),
-          responseDto,
-        ),
+        (_) async => responseDto,
       );
 
       final result = await repository.getEpisodes(3);
@@ -79,26 +71,6 @@ void main() {
       expect(result.page, 3);
       expect(result.hasNext, false);
       expect(result.items, isEmpty);
-    });
-
-    test('throws AppException with server error when body is null', () {
-      when(() => service.getEpisodes(1)).thenAnswer(
-        (_) async => chopper.Response<EpisodeResponseDto>(
-          http.Response('', 200),
-          null,
-        ),
-      );
-
-      expect(
-        () => repository.getEpisodes(1),
-        throwsA(
-          isA<AppException>().having(
-            (e) => e.error,
-            'error',
-            const AppError.server(),
-          ),
-        ),
-      );
     });
 
     test('throws AppException when service throws DioException', () {

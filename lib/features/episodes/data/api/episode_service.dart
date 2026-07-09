@@ -1,14 +1,14 @@
-import 'package:chopper/chopper.dart';
+import 'package:dio/dio.dart';
+import 'package:retrofit/retrofit.dart';
 
 import '../dto/episode_dto.dart';
 
-part 'episode_service.chopper.dart';
+part 'episode_service.g.dart';
 
-@ChopperApi(baseUrl: '/episode')
-abstract class EpisodeService extends ChopperService {
-  static EpisodeService create([ChopperClient? client]) =>
-      _$EpisodeService(client);
+@RestApi()
+abstract class EpisodeService {
+  factory EpisodeService(Dio dio, {String? baseUrl}) = _EpisodeService;
 
-  @GET()
-  Future<Response<EpisodeResponseDto>> getEpisodes(@Query() int page);
+  @GET('')
+  Future<EpisodeResponseDto> getEpisodes(@Query('page') int page);
 }

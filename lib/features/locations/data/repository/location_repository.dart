@@ -19,18 +19,13 @@ class LocationRepository implements ILocationRepository {
   @override
   Future<PageResult<Location>> getLocations(int page) async {
     try {
-      final response = await _service.getLocations(page);
-      final body = response.body;
-
-      if (body == null) {
-        throw AppException(const AppError.server());
-      }
+      final dto = await _service.getLocations(page);
 
       return PageResult<Location>(
-        items: mapLocationList(body.results),
+        items: mapLocationList(dto.results),
         page: page,
-        totalPages: body.info.pages,
-        hasNext: body.info.next != null,
+        totalPages: dto.info.pages,
+        hasNext: dto.info.next != null,
       );
     } on DioException catch (e) {
       throw AppException(_errorHandler.map(e));

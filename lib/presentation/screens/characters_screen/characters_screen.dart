@@ -5,6 +5,7 @@ import 'package:elementary/elementary.dart';
 import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 
+import '../../../config/urls.dart';
 import '../../../features/characters/domain/model/character.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
@@ -106,7 +107,9 @@ class _CharactersBodyState extends State<_CharactersBody> {
               ValueListenableBuilder<bool>(
                 valueListenable: widget.wm.isLoadingMore,
                 builder: (context, isLoadingMore, _) {
-                  if (!isLoadingMore) return const SliverToBoxAdapter();
+                  if (!isLoadingMore) {
+                    return const SliverToBoxAdapter();
+                  }
                   return const SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
@@ -168,10 +171,12 @@ class _CharacterCard extends StatelessWidget {
           children: [
             Expanded(
               child: Image.network(
-                character.image,
+                '${AppUrls.base}${character.image}',
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
+                  if (loadingProgress == null) {
+                    return child;
+                  }
                   return ColoredBox(
                     color: theme.colorScheme.surfaceContainerHighest,
                     child: const Center(

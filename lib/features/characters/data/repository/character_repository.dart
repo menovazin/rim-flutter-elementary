@@ -19,18 +19,13 @@ class CharacterRepository implements ICharacterRepository {
   @override
   Future<PageResult<Character>> getCharacters(int page) async {
     try {
-      final response = await _service.getCharacters(page);
-      final body = response.body;
-
-      if (body == null) {
-        throw AppException(const AppError.server());
-      }
+      final dto = await _service.getCharacters(page);
 
       return PageResult<Character>(
-        items: mapCharacterList(body.results),
+        items: mapCharacterList(dto.results),
         page: page,
-        totalPages: body.info.pages,
-        hasNext: body.info.next != null,
+        totalPages: dto.info.pages,
+        hasNext: dto.info.next != null,
       );
     } on DioException catch (e) {
       throw AppException(_errorHandler.map(e));
