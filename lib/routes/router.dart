@@ -53,5 +53,6 @@ class AppRouter extends RootStackRouter {
           ],
         ),
         AutoRoute(page: CharacterDetailRoute.page),
+        AutoRoute(page: EpisodeDetailRoute.page),
       ];
 }

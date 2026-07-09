@@ -184,6 +184,12 @@ abstract class AppLocalizations {
   /// **'Episodes ({count})'**
   String sectionEpisodesCount(int count);
 
+  /// No description provided for @sectionCharactersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters ({count})'**
+  String sectionCharactersCount(int count);
+
   /// No description provided for @retryButton.
   ///
   /// In en, this message translates to:
@@ -195,6 +201,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error loading characters'**
   String get errorLoadingCharacters;
+
+  /// No description provided for @errorLoadingEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading episodes'**
+  String get errorLoadingEpisodes;
+
+  /// No description provided for @detailAirDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Air Date'**
+  String get detailAirDate;
+
+  /// No description provided for @detailEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode'**
+  String get detailEpisode;
 }
 
 class _AppLocalizationsDelegate

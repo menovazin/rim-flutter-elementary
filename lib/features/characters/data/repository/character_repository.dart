@@ -8,6 +8,7 @@ import '../../domain/contract/character_repository.dart';
 import '../../domain/model/character.dart';
 import '../api/character_service.dart';
 import '../converter/character_mapper.dart';
+import '../dto/character_dto.dart';
 
 @LazySingleton(as: ICharacterRepository)
 class CharacterRepository implements ICharacterRepository {
@@ -27,6 +28,25 @@ class CharacterRepository implements ICharacterRepository {
         totalPages: dto.info.pages,
         hasNext: dto.info.next != null,
       );
+    } on DioException catch (e) {
+      throw AppException(_errorHandler.map(e));
+    }
+  }
+
+  @override
+  Future<List<Character>> getCharactersByIds(List<int> ids) async {
+    try {
+      final idsString = ids.join(',');
+      final response = await _service.getMultipleCharacters(idsString);
+
+      if (response is List) {
+        final dtos = response.map((e) => CharacterDto.fromJson(e as Map<String, dynamic>)).toList();
+        return mapCharacterList(dtos);
+      } else if (response is Map<String, dynamic>) {
+        return [mapCharacter(CharacterDto.fromJson(response))];
+      }
+
+      return [];
     } on DioException catch (e) {
       throw AppException(_errorHandler.map(e));
     }

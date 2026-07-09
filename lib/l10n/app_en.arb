@@ -22,6 +22,17 @@
       }
     }
   },
+  "sectionCharactersCount": "Characters ({count})",
+  "@sectionCharactersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "retryButton": "Retry",
-  "errorLoadingCharacters": "Error loading characters"
+  "errorLoadingCharacters": "Error loading characters",
+  "errorLoadingEpisodes": "Error loading episodes",
+  "detailAirDate": "Air Date",
+  "detailEpisode": "Episode"
 }

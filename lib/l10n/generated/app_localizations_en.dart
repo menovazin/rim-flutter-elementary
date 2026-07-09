@@ -56,8 +56,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String sectionCharactersCount(int count) {
+    return 'Characters ($count)';
+  }
+
+  @override
   String get retryButton => 'Retry';
 
   @override
   String get errorLoadingCharacters => 'Error loading characters';
+
+  @override
+  String get errorLoadingEpisodes => 'Error loading episodes';
+
+  @override
+  String get detailAirDate => 'Air Date';
+
+  @override
+  String get detailEpisode => 'Episode';
 }
