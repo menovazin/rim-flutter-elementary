@@ -4,5 +4,9 @@
   "loginTitle": "Welcome",
   "loginSubtitle": "Enter any name to explore the multiverse",
   "loginNameLabel": "Username",
-  "loginSignInButton": "Sign In"
+  "loginSignInButton": "Sign In",
+  "tabCharacters": "Characters",
+  "tabEpisodes": "Episodes",
+  "tabLocations": "Locations",
+  "menuSignOut": "Sign Out"
 }

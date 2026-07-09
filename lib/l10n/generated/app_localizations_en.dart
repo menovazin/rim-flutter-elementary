@@ -22,4 +22,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginSignInButton => 'Sign In';
+
+  @override
+  String get tabCharacters => 'Characters';
+
+  @override
+  String get tabEpisodes => 'Episodes';
+
+  @override
+  String get tabLocations => 'Locations';
+
+  @override
+  String get menuSignOut => 'Sign Out';
 }

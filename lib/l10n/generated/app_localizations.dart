@@ -123,6 +123,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign In'**
   String get loginSignInButton;
+
+  /// No description provided for @tabCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters'**
+  String get tabCharacters;
+
+  /// No description provided for @tabEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes'**
+  String get tabEpisodes;
+
+  /// No description provided for @tabLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Locations'**
+  String get tabLocations;
+
+  /// No description provided for @menuSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get menuSignOut;
 }
 
 class _AppLocalizationsDelegate
