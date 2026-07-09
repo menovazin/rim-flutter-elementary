@@ -5,7 +5,6 @@ analyzer:
     - "build/**"
     - "script/**"
     - "**/*.g.dart"
-    - "**/*.freezed.dart"
     - "**/*.config.dart"
     - "**/app_localizations_**.dart"
     - "lib/gen/**"

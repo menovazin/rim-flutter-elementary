@@ -17,7 +17,7 @@ import 'package:rim_elementary/presentation/screens/splash_screen/splash_page.da
 /// [_i1.SplashPage]
 class SplashRoute extends _i2.PageRouteInfo<void> {
   const SplashRoute({List<_i2.PageRouteInfo>? children})
-      : super(SplashRoute.name, initialChildren: children);
+    : super(SplashRoute.name, initialChildren: children);
 
   static const String name = 'SplashRoute';
 
