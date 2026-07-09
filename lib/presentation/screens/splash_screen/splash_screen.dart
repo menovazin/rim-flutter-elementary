@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'splash_screen_widget_model.dart';
 
-/// Placeholder splash screen. The real token-gate arrives in ticket 02.
 class SplashScreen extends ElementaryWidget<ISplashWidgetModel> {
   const SplashScreen({
     WidgetModelFactory wmFactory = splashWidgetModelFactory,

@@ -5,7 +5,6 @@ import '../l10n/generated/app_localizations.dart';
 import '../routes/router.dart';
 import '../themes/app_theme.dart';
 
-/// Root application widget. Material 3 + AutoRoute + EN localization.
 class App extends StatelessWidget {
   final AppRouter _router;
 

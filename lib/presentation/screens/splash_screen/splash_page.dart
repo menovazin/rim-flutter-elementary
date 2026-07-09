@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'splash_screen.dart';
 
-/// AutoRoute page that hosts the [SplashScreen] Elementary triple.
 @RoutePage()
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});

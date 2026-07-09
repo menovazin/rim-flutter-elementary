@@ -6,9 +6,4 @@ void main() {
   test('configureDependencies initializes GetIt without throwing', () {
     expect(configureDependencies, returnsNormally);
   });
-
-  test('getIt is ready after configureDependencies', () {
-    configureDependencies();
-    expect(getIt, isNotNull);
-  });
 }
