@@ -1,0 +1,77 @@
+name: rim_elementary
+description: "Rick and Morty explorer built on Elementary (MVVM)."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.4.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Architecture — Elementary (MVVM)
+  elementary: ^3.2.1
+  elementary_helper: ^1.1.0
+
+  # DI
+  get_it: ^9.2.0
+  injectable: ^2.4.4
+
+  # Navigation
+  auto_route: ^11.1.0
+
+  # Network
+  chopper: ^8.6.0
+  dio: ^5.8.0+1
+
+  # Models
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+
+  # Storage
+  flutter_secure_storage: ^10.0.0
+  shared_preferences: ^2.2.3
+
+  # Product packages
+  flutter_drawer_menu: ^0.1.5
+  pinch_to_zoom_scrollable: ^0.1.0
+
+  # Localization
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Architecture — testing
+  elementary_test: ^2.1.1
+
+  # Codegen
+  build_runner: ^2.7.1
+  injectable_generator: ^2.6.2
+  auto_route_generator: ^10.1.0
+  chopper_generator: ^8.6.2
+  freezed: ^3.1.0
+  json_serializable: ^6.9.5
+  flutter_gen_runner: ^5.6.0
+
+  # Linting
+  mjk_lint_rules: ^4.0.4
+
+  # Testing
+  mocktail: ^1.0.5
+  golden_toolkit: ^0.15.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+flutter_gen:
+  output: lib/gen/
+  line_length: 80

@@ -1,0 +1,27 @@
+include: package:mjk_lint_rules/mjk_lint_rules.yaml
+
+analyzer:
+  exclude:
+    - "build/**"
+    - "script/**"
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.config.dart"
+    - "**/app_localizations_**.dart"
+    - "lib/gen/**"
+    - "arch-refs/**"
+    - "design-refs/**"
+  errors:
+    invalid_annotation_target: ignore
+    do_not_use_environment: ignore
+
+linter:
+  rules:
+    always_use_package_imports: false
+    always_put_required_named_parameters_first: false
+    sort_pub_dependencies: false
+    prefer_relative_imports: true
+    prefer_single_quotes: true
+
+formatter:
+  trailing_commas: preserve
