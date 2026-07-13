@@ -70,6 +70,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorLoadingEpisodes => 'Error loading episodes';
 
   @override
+  String get errorLoadingLocations => 'Error loading locations';
+
+  @override
+  String sectionResidentsCount(int count) {
+    return 'Residents ($count)';
+  }
+
+  @override
+  String get noResidentsMessage => 'No residents';
+
+  @override
   String get detailAirDate => 'Air Date';
 
   @override

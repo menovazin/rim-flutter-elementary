@@ -208,6 +208,24 @@ abstract class AppLocalizations {
   /// **'Error loading episodes'**
   String get errorLoadingEpisodes;
 
+  /// No description provided for @errorLoadingLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading locations'**
+  String get errorLoadingLocations;
+
+  /// No description provided for @sectionResidentsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Residents ({count})'**
+  String sectionResidentsCount(int count);
+
+  /// No description provided for @noResidentsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No residents'**
+  String get noResidentsMessage;
+
   /// No description provided for @detailAirDate.
   ///
   /// In en, this message translates to:

@@ -1,0 +1,198 @@
+import 'package:elementary_test/elementary_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:rim_elementary/features/common/domain/model/page_result.dart';
+import 'package:rim_elementary/features/locations/domain/model/location.dart';
+import 'package:rim_elementary/presentation/screens/locations_screen/locations_screen.dart';
+import 'package:rim_elementary/presentation/screens/locations_screen/locations_screen_model.dart';
+import 'package:rim_elementary/presentation/screens/locations_screen/locations_screen_widget_model.dart';
+
+import '../mocks/location_repository_mock.dart';
+
+void main() {
+  late LocationRepositoryMock repository;
+  late LocationsModel model;
+
+  LocationsWidgetModel setUpWm() {
+    repository = LocationRepositoryMock();
+    model = LocationsModel(repository);
+
+    return LocationsWidgetModel(model);
+  }
+
+  Location createLocation(int id) {
+    return Location(
+      id: id,
+      name: 'Location $id',
+      type: 'Planet',
+      dimension: 'Dimension C-137',
+      residentIds: [1, 2],
+    );
+  }
+
+  PageResult<Location> createPageResult({
+    required int page,
+    required bool hasNext,
+    int itemCount = 20,
+  }) {
+    return PageResult(
+      items: List.generate(itemCount, (i) => createLocation(page * 20 + i)),
+      page: page,
+      totalPages: 5,
+      hasNext: hasNext,
+    );
+  }
+
+  group('LocationsWidgetModel', () {
+    testWidgetModel<LocationsWidgetModel, LocationsScreen>(
+      'loadInitial loads first page',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getLocations(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: true),
+        );
+
+        tester.init();
+
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        expect(wm.locationsState.value.data, isNotNull);
+        expect(wm.locationsState.value.data!.length, 20);
+        expect(wm.hasNext, true);
+        expect(wm.isLoadingMore.value, false);
+        expect(wm.hasError.value, false);
+
+        verify(() => repository.getLocations(1)).called(1);
+      },
+    );
+
+    testWidgetModel<LocationsWidgetModel, LocationsScreen>(
+      'loadMore appends next page',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getLocations(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: true),
+        );
+        when(() => repository.getLocations(2)).thenAnswer(
+          (_) async => createPageResult(page: 2, hasNext: false),
+        );
+
+        tester.init();
+
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        await wm.loadMore();
+
+        expect(wm.locationsState.value.data!.length, 40);
+        expect(wm.hasNext, false);
+        expect(wm.isLoadingMore.value, false);
+
+        verify(() => repository.getLocations(2)).called(1);
+      },
+    );
+
+    testWidgetModel<LocationsWidgetModel, LocationsScreen>(
+      'loadMore stops when hasNext is false',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getLocations(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: false),
+        );
+
+        tester.init();
+
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        await wm.loadMore();
+
+        expect(wm.locationsState.value.data!.length, 20);
+        expect(wm.hasNext, false);
+
+        verifyNever(() => repository.getLocations(2));
+      },
+    );
+
+    testWidgetModel<LocationsWidgetModel, LocationsScreen>(
+      'loadMore sets hasError on exception',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getLocations(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: true),
+        );
+        when(() => repository.getLocations(2)).thenThrow(
+          Exception('Network error'),
+        );
+
+        tester.init();
+
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        await wm.loadMore();
+
+        expect(wm.hasError.value, true);
+        expect(wm.isLoadingMore.value, false);
+        expect(wm.locationsState.value.data!.length, 20);
+      },
+    );
+
+    testWidgetModel<LocationsWidgetModel, LocationsScreen>(
+      'refresh resets to page 1',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getLocations(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: true),
+        );
+        when(() => repository.getLocations(2)).thenAnswer(
+          (_) async => createPageResult(page: 2, hasNext: true),
+        );
+
+        tester.init();
+
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        await wm.loadMore();
+
+        expect(wm.locationsState.value.data!.length, 40);
+
+        when(() => repository.getLocations(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: true, itemCount: 10),
+        );
+
+        await wm.refresh();
+
+        expect(wm.locationsState.value.data!.length, 10);
+        expect(wm.hasNext, true);
+        expect(wm.hasError.value, false);
+
+        verify(() => repository.getLocations(1)).called(2);
+      },
+    );
+
+    testWidgetModel<LocationsWidgetModel, LocationsScreen>(
+      'retry reloads current page',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getLocations(1)).thenThrow(
+          Exception('Network error'),
+        );
+
+        tester.init();
+
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        expect(wm.hasError.value, true);
+
+        when(() => repository.getLocations(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: true),
+        );
+
+        await wm.retry();
+
+        expect(wm.locationsState.value.data!.length, 20);
+        expect(wm.hasError.value, false);
+
+        verify(() => repository.getLocations(1)).called(2);
+      },
+    );
+  });
+}

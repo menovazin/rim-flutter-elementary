@@ -33,6 +33,16 @@
   "retryButton": "Retry",
   "errorLoadingCharacters": "Error loading characters",
   "errorLoadingEpisodes": "Error loading episodes",
+  "errorLoadingLocations": "Error loading locations",
+  "sectionResidentsCount": "Residents ({count})",
+  "@sectionResidentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noResidentsMessage": "No residents",
   "detailAirDate": "Air Date",
   "detailEpisode": "Episode"
 }
