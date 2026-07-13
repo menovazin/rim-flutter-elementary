@@ -2,6 +2,7 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../themes/app_theme.dart';
 import 'login_screen_widget_model.dart';
 
 class LoginScreen extends ElementaryWidget<ILoginWidgetModel> {
@@ -37,39 +38,97 @@ class _LoginBodyState extends State<_LoginBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final designs = context.designs;
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              l10n.loginTitle,
-              style: Theme.of(context).textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.loginSubtitle,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(
-                labelText: l10n.loginNameLabel,
-                border: const OutlineInputBorder(),
+      backgroundColor: designs.background,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Icon(
+                    Icons.science_outlined,
+                    size: 72,
+                    color: designs.primary,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    l10n.loginTitle,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.headlineMedium?.copyWith(
+                      color: designs.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.loginSubtitle,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: designs.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  TextField(
+                    controller: _usernameController,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) =>
+                        widget.wm.signIn(_usernameController.text),
+                    style: TextStyle(color: designs.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: l10n.loginNameLabel,
+                      labelStyle: TextStyle(color: designs.textSecondary),
+                      filled: true,
+                      fillColor: designs.surface,
+                      prefixIcon: Icon(
+                        Icons.person_outline,
+                        color: designs.textSecondary,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: designs.textSecondary.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: designs.primary),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          widget.wm.signIn(_usernameController.text),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: designs.primary,
+                        foregroundColor: designs.onPrimary,
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.loginSignInButton,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => widget.wm.signIn(_usernameController.text),
-              child: Text(l10n.loginSignInButton),
-            ),
-          ],
+          ),
         ),
       ),
     );

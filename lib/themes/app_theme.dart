@@ -1,45 +1,57 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-@immutable
-class AppColors extends ThemeExtension<AppColors> {
-  final Color badgeBackground;
+import 'extensions/custom_designs.dart';
 
-  const AppColors({required this.badgeBackground});
+part 'dark/dark_theme_data.dart';
+part 'light/light_theme_data.dart';
 
-  static const light = AppColors(badgeBackground: Color(0xFFECEFF1));
+const kFontFamilyNunito = 'Nunito';
 
-  static const dark = AppColors(badgeBackground: Color(0xFF37474F));
+enum ThemeType {
+  light,
+  dark,
+  system;
 
-  @override
-  AppColors copyWith({Color? badgeBackground}) {
-    return AppColors(badgeBackground: badgeBackground ?? this.badgeBackground);
+  static final themeDataMap = {
+    ThemeType.dark: _darkThemeData,
+    ThemeType.light: _lightThemeData,
+  };
+
+  static final labelToEnumMap = {
+    ThemeType.dark.name: ThemeType.dark,
+    ThemeType.light.name: ThemeType.light,
+    ThemeType.system.name: ThemeType.system,
+  };
+
+  static ThemeType fromString(String text) {
+    return labelToEnumMap[text] ?? ThemeType.light;
   }
 
-  @override
-  AppColors lerp(ThemeExtension<AppColors>? other, double t) {
-    if (other is! AppColors) {
-      return this;
+  ThemeData themeData({String? fontFamily}) {
+    if (this == ThemeType.system) {
+      final resolved = switch (_brightness) {
+        Brightness.light => ThemeType.light,
+        Brightness.dark => ThemeType.dark,
+      };
+      return themeDataMap[resolved]!(fontFamily: fontFamily);
     }
-    return AppColors(
-      badgeBackground: Color.lerp(badgeBackground, other.badgeBackground, t)!,
-    );
+    return themeDataMap[this]!(fontFamily: fontFamily);
   }
+
+  Brightness get _brightness => PlatformDispatcher.instance.platformBrightness;
 }
 
-ThemeData get lightTheme => _buildTheme(Brightness.light, AppColors.light);
+ThemeData lightTheme({String? fontFamily}) =>
+    ThemeType.light.themeData(fontFamily: fontFamily);
 
-ThemeData get darkTheme => _buildTheme(Brightness.dark, AppColors.dark);
+ThemeData darkTheme({String? fontFamily}) =>
+    ThemeType.dark.themeData(fontFamily: fontFamily);
 
-ThemeData _buildTheme(Brightness brightness, AppColors colors) {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: const Color(0xFF6CA51E),
-    brightness: brightness,
-  );
-
-  return ThemeData(
-    useMaterial3: true,
-    colorScheme: colorScheme,
-    visualDensity: VisualDensity.adaptivePlatformDensity,
-    extensions: [colors],
-  );
+extension BuildContextExt on BuildContext {
+  TextTheme get textTheme => Theme.of(this).textTheme;
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
+  CustomDesigns get designs => Theme.of(this).extension<CustomDesigns>()!;
+  BaseDesigns get baseDesign => Theme.of(this).extension<BaseDesigns>()!;
 }

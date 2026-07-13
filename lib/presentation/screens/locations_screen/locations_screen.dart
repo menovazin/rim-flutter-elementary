@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import '../../../features/locations/domain/model/location.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
+import '../../../themes/app_theme.dart';
+import '../../widgets/grid_error_tile.dart';
 import '../../widgets/location_type_x.dart';
 import 'locations_screen_widget_model.dart';
 
@@ -59,29 +61,31 @@ class _LocationsBodyState extends State<_LocationsBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final designs = context.designs;
 
     return EntityStateNotifierBuilder<List<Location>>(
       listenableEntityState: widget.wm.locationsState,
-      loadingBuilder: (_, _) => const Center(
-        child: CircularProgressIndicator(),
+      loadingBuilder: (_, _) => Center(
+        child: CircularProgressIndicator(color: designs.primary),
       ),
       errorBuilder: (_, _, _) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(l10n.errorLoadingLocations),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: widget.wm.retry,
-              child: Text(l10n.retryButton),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: GridErrorTile(
+            message: l10n.errorLoadingLocations,
+            onRetry: widget.wm.retry,
+          ),
         ),
       ),
       builder: (_, locations) {
         if (locations == null || locations.isEmpty) {
           return Center(
-            child: Text(l10n.tabLocations),
+            child: Text(
+              l10n.tabLocations,
+              style: context.textTheme.bodyLarge?.copyWith(
+                color: designs.textSecondary,
+              ),
+            ),
           );
         }
 
@@ -113,10 +117,12 @@ class _LocationsBodyState extends State<_LocationsBody> {
                   if (!isLoadingMore) {
                     return const SliverToBoxAdapter();
                   }
-                  return const SliverToBoxAdapter(
+                  return SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Center(child: CircularProgressIndicator()),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: CircularProgressIndicator(color: designs.primary),
+                      ),
                     ),
                   );
                 },
@@ -130,11 +136,9 @@ class _LocationsBodyState extends State<_LocationsBody> {
                   return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: ElevatedButton(
-                          onPressed: widget.wm.retry,
-                          child: Text(l10n.retryButton),
-                        ),
+                      child: GridErrorTile(
+                        message: l10n.errorLoadingLocations,
+                        onRetry: widget.wm.retry,
                       ),
                     ),
                   );
@@ -159,54 +163,45 @@ class _LocationListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
     final locType = location.type.isEmpty ? 'Unknown' : location.type;
     final dimension =
         location.dimension.isEmpty ? 'Unknown' : location.dimension;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: GestureDetector(
-        onTap: onTap,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            leading: CircleAvatar(
-              backgroundColor:
-                  theme.colorScheme.secondary.withValues(alpha: 0.18),
-              child: Icon(
-                location.type.locationIcon,
-                color: theme.colorScheme.secondary,
-              ),
-            ),
-            title: Text(
-              location.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            subtitle: Text(
-              '$locType • $dimension',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            trailing: Icon(
-              Icons.chevron_right,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: designs.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        leading: CircleAvatar(
+          backgroundColor: designs.secondary.withValues(alpha: 0.18),
+          child: Icon(
+            location.type.locationIcon,
+            color: designs.secondary,
           ),
         ),
+        title: Text(
+          location.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.textTheme.titleSmall?.copyWith(
+            color: designs.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        subtitle: Text(
+          '$locType • $dimension',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.textTheme.bodySmall?.copyWith(
+            color: designs.textSecondary,
+          ),
+        ),
+        trailing: Icon(Icons.chevron_right, color: designs.textSecondary),
+        onTap: onTap,
       ),
     );
   }

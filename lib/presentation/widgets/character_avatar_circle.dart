@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../themes/app_theme.dart';
 import '../../utils/avatar_url_utils.dart';
 
 class CharacterAvatarCircle extends StatelessWidget {
@@ -15,7 +16,7 @@ class CharacterAvatarCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
     final url = AvatarUrlUtils.avatarUrlFromId(characterId);
 
     final avatar = ClipOval(
@@ -26,24 +27,24 @@ class CharacterAvatarCircle extends StatelessWidget {
           imageUrl: url,
           fit: BoxFit.cover,
           placeholder: (_, _) => ColoredBox(
-            color: theme.colorScheme.surfaceContainerHighest,
+            color: designs.surface,
             child: Center(
               child: SizedBox(
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: theme.colorScheme.primary,
+                  color: designs.primary,
                 ),
               ),
             ),
           ),
           errorWidget: (_, _, _) => ColoredBox(
-            color: theme.colorScheme.surfaceContainerHighest,
+            color: designs.surface,
             child: Icon(
               Icons.person,
               size: 24,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: designs.textSecondary,
             ),
           ),
         ),
@@ -66,8 +67,8 @@ class CharacterAvatarCircle extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+            style: context.textTheme.bodySmall?.copyWith(
+              color: designs.textSecondary,
               fontSize: 10,
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 
 import '../../../features/locations/domain/model/location.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../themes/app_theme.dart';
 import '../../widgets/character_avatar_circle.dart';
 import '../../widgets/location_type_x.dart';
 import 'location_detail_screen_widget_model.dart';
@@ -22,14 +23,24 @@ class LocationDetailScreen
     return Builder(
       builder: (context) {
         final l10n = AppLocalizations.of(context)!;
-        final theme = Theme.of(context);
+        final designs = context.designs;
         final dimension = location.dimension.isEmpty
             ? 'Unknown'
             : location.dimension;
+        final locType =
+            location.type.isEmpty ? 'Unknown' : location.type;
 
         return Scaffold(
+          backgroundColor: designs.background,
           appBar: AppBar(
-            title: Text(location.name),
+            backgroundColor: designs.background,
+            iconTheme: IconThemeData(color: designs.textPrimary),
+            title: Text(
+              location.name,
+              style: context.textTheme.titleLarge?.copyWith(
+                color: designs.textPrimary,
+              ),
+            ),
           ),
           body: PinchToZoomScrollableWidget(
             child: SingleChildScrollView(
@@ -43,8 +54,8 @@ class LocationDetailScreen
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          theme.colorScheme.secondaryContainer,
-                          theme.colorScheme.surfaceContainerHighest,
+                          designs.secondary.withValues(alpha: 0.15),
+                          designs.surface,
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -55,28 +66,43 @@ class LocationDetailScreen
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
-                          location.type.locationIcon,
-                          color: theme.colorScheme.secondary,
+                          locType.locationIcon,
+                          color: designs.secondary,
                           size: 40,
                         ),
                         const SizedBox(height: 12),
                         Text(
                           location.name,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            color: theme.colorScheme.onSurface,
+                          style: context.textTheme.headlineSmall?.copyWith(
+                            color: designs.textPrimary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        _DimensionBadge(label: dimension),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _Badge(
+                              label: locType,
+                              color: designs.secondary,
+                              textColor: designs.onSecondary,
+                            ),
+                            _Badge(
+                              label: dimension,
+                              color: Colors.transparent,
+                              textColor: designs.secondary,
+                              border: Border.all(
+                                color: designs.secondary.withValues(alpha: 0.4),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 24),
-                  _ResidentsSection(
-                    wm: wm,
-                    l10n: l10n,
-                  ),
+                  _ResidentsSection(wm: wm, l10n: l10n),
                 ],
               ),
             ),
@@ -87,27 +113,32 @@ class LocationDetailScreen
   }
 }
 
-class _DimensionBadge extends StatelessWidget {
+class _Badge extends StatelessWidget {
   final String label;
+  final Color color;
+  final Color textColor;
+  final BoxBorder? border;
 
-  const _DimensionBadge({required this.label});
+  const _Badge({
+    required this.label,
+    required this.color,
+    required this.textColor,
+    this.border,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
+        color: color,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: theme.colorScheme.secondary.withValues(alpha: 0.4),
-        ),
+        border: border,
       ),
       child: Text(
         label,
-        style: theme.textTheme.labelMedium?.copyWith(
-          color: theme.colorScheme.secondary,
+        style: context.textTheme.labelMedium?.copyWith(
+          color: textColor,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -126,7 +157,7 @@ class _ResidentsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
     final residentIds = wm.residentIds;
 
     if (residentIds.isEmpty) {
@@ -135,16 +166,16 @@ class _ResidentsSection extends StatelessWidget {
         children: [
           Text(
             l10n.sectionResidentsCount(0),
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.primary,
+            style: context.textTheme.titleMedium?.copyWith(
+              color: designs.primary,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 12),
           Text(
             l10n.noResidentsMessage,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: designs.textSecondary,
             ),
           ),
         ],
@@ -156,8 +187,8 @@ class _ResidentsSection extends StatelessWidget {
       children: [
         Text(
           l10n.sectionResidentsCount(residentIds.length),
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: theme.colorScheme.primary,
+          style: context.textTheme.titleMedium?.copyWith(
+            color: designs.primary,
             fontWeight: FontWeight.w700,
           ),
         ),

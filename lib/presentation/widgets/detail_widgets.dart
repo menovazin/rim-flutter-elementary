@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../themes/app_theme.dart';
+
 class DetailInfoRow extends StatelessWidget {
   final String label;
   final String value;
@@ -8,7 +10,7 @@ class DetailInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -19,16 +21,16 @@ class DetailInfoRow extends StatelessWidget {
             width: 140,
             child: Text(
               label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: designs.textSecondary,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value.isEmpty ? '—' : value,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: designs.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -46,12 +48,12 @@ class DetailSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
 
     return Text(
       title,
-      style: theme.textTheme.titleMedium?.copyWith(
-        color: theme.colorScheme.primary,
+      style: context.textTheme.titleMedium?.copyWith(
+        color: designs.primary,
         fontWeight: FontWeight.w700,
       ),
     );
@@ -65,21 +67,21 @@ class DetailChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+        color: designs.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.4),
+          color: designs.secondary.withValues(alpha: 0.4),
         ),
       ),
       child: Text(
         label,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.onSurface,
+        style: context.textTheme.bodySmall?.copyWith(
+          color: designs.textPrimary,
         ),
       ),
     );

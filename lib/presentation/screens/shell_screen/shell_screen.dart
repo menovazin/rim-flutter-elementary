@@ -5,8 +5,11 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_drawer_menu/flutter_drawer_menu.dart';
 
+import '../../../di/di.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
+import '../../../services/theme_controller.dart';
+import '../../../themes/app_theme.dart';
 import 'shell_screen_widget_model.dart';
 
 class ShellScreen extends ElementaryWidget<IShellWidgetModel> {
@@ -42,6 +45,7 @@ class _ShellBodyState extends State<_ShellBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final designs = context.designs;
     final titles = [
       l10n.tabCharacters,
       l10n.tabEpisodes,
@@ -58,6 +62,8 @@ class _ShellBodyState extends State<_ShellBody> {
         final tabsRouter = AutoTabsRouter.of(context);
         return DrawerMenu(
           controller: _menuController,
+          backgroundColor: designs.background,
+          scrimColor: Colors.black.withValues(alpha: 0.4),
           menu: _Menu(
             activeIndex: tabsRouter.activeIndex,
             titles: titles,
@@ -70,15 +76,25 @@ class _ShellBodyState extends State<_ShellBody> {
               unawaited(_menuController.close());
               unawaited(widget.wm.signOut());
             },
+            onToggleTheme: () {
+              unawaited(getIt<ThemeController>().switchTheme());
+            },
           ),
           body: Scaffold(
+            backgroundColor: designs.background,
             appBar: AppBar(
+              backgroundColor: designs.background,
               centerTitle: true,
               leading: IconButton(
-                icon: const Icon(Icons.menu),
+                icon: Icon(Icons.menu, color: designs.textPrimary),
                 onPressed: _menuController.open,
               ),
-              title: Text(titles[tabsRouter.activeIndex]),
+              title: Text(
+                titles[tabsRouter.activeIndex],
+                style: context.textTheme.titleLarge?.copyWith(
+                  color: designs.textPrimary,
+                ),
+              ),
             ),
             body: child,
           ),
@@ -94,6 +110,7 @@ class _Menu extends StatelessWidget {
   final List<IconData> icons;
   final ValueChanged<int> onSelect;
   final VoidCallback onLogout;
+  final VoidCallback onToggleTheme;
 
   const _Menu({
     required this.activeIndex,
@@ -101,55 +118,67 @@ class _Menu extends StatelessWidget {
     required this.icons,
     required this.onSelect,
     required this.onLogout,
+    required this.onToggleTheme,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
     final l10n = AppLocalizations.of(context)!;
 
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.science_outlined,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    l10n.appTitle,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+    return ColoredBox(
+      color: designs.surface,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+              child: Row(
+                children: [
+                  Icon(Icons.science_outlined, color: designs.primary),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.appTitle,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: designs.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  IconButton(
+                    icon: Icon(
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Icons.light_mode_outlined
+                          : Icons.dark_mode_outlined,
+                      color: designs.textPrimary,
+                      size: 24,
+                    ),
+                    onPressed: onToggleTheme,
+                  ),
+                ],
+              ),
             ),
-          ),
-          Divider(color: theme.dividerColor.withValues(alpha: 0.15)),
-          for (var i = 0; i < titles.length; i++)
+            Divider(color: designs.textSecondary.withValues(alpha: 0.15)),
+            for (var i = 0; i < titles.length; i++)
+              _MenuItem(
+                icon: icons[i],
+                title: titles[i],
+                active: i == activeIndex,
+                onTap: () => onSelect(i),
+              ),
+            const Spacer(),
+            Divider(color: designs.textSecondary.withValues(alpha: 0.15)),
             _MenuItem(
-              icon: icons[i],
-              title: titles[i],
-              active: i == activeIndex,
-              onTap: () => onSelect(i),
+              icon: Icons.logout,
+              title: l10n.menuSignOut,
+              active: false,
+              onTap: onLogout,
             ),
-          const Spacer(),
-          Divider(color: theme.dividerColor.withValues(alpha: 0.15)),
-          _MenuItem(
-            icon: Icons.logout,
-            title: l10n.menuSignOut,
-            active: false,
-            onTap: onLogout,
-          ),
-          const SizedBox(height: 12),
-        ],
+            const SizedBox(height: 12),
+          ],
+        ),
       ),
     );
   }
@@ -170,10 +199,8 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = active
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
+    final designs = context.designs;
+    final color = active ? designs.primary : designs.textSecondary;
 
     return Material(
       color: Colors.transparent,
@@ -184,7 +211,7 @@ class _MenuItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           decoration: BoxDecoration(
             color: active
-                ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                ? designs.primary.withValues(alpha: 0.12)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
           ),
@@ -194,10 +221,8 @@ class _MenuItem extends StatelessWidget {
               const SizedBox(width: 14),
               Text(
                 title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: active
-                      ? theme.colorScheme.onSurface
-                      : theme.colorScheme.onSurfaceVariant,
+                style: context.textTheme.titleSmall?.copyWith(
+                  color: active ? designs.textPrimary : designs.textSecondary,
                   fontWeight: active ? FontWeight.w700 : FontWeight.w500,
                 ),
               ),

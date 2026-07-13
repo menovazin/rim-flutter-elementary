@@ -13,6 +13,7 @@ import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:rim_elementary/di/services_module.dart' as _i407;
+import 'package:rim_elementary/di/storage_module.dart' as _i213;
 import 'package:rim_elementary/features/characters/data/api/character_service.dart'
     as _i316;
 import 'package:rim_elementary/features/characters/data/repository/character_repository.dart'
@@ -34,20 +35,34 @@ import 'package:rim_elementary/features/locations/domain/contract/location_repos
 import 'package:rim_elementary/routes/router.dart' as _i897;
 import 'package:rim_elementary/services/error_handler.dart' as _i1044;
 import 'package:rim_elementary/services/network/dio_factory.dart' as _i10;
+import 'package:rim_elementary/services/storage/theme_service.dart' as _i1017;
+import 'package:rim_elementary/services/theme_controller.dart' as _i1045;
 import 'package:rim_elementary/services/token_service.dart' as _i218;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
-  _i174.GetIt init({
+  Future<_i174.GetIt> init({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
-  }) {
+  }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final storageModule = _$StorageModule();
     final servicesModule = _$ServicesModule();
     final dioFactory = _$DioFactory();
+    await gh.factoryAsync<_i460.SharedPreferences>(
+      () => storageModule.sharedPreferences,
+      preResolve: true,
+    );
     gh.lazySingleton<_i218.ITokenService>(() => servicesModule.tokenService());
     gh.lazySingleton<_i897.AppRouter>(() => servicesModule.appRouter());
     gh.lazySingleton<_i361.Dio>(() => dioFactory.create());
+    gh.factory<_i1017.ThemeService>(
+      () => _i1017.ThemeService(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i1045.ThemeController>(
+      () => _i1045.ThemeController(gh<_i1017.ThemeService>()),
+    );
     gh.factory<_i316.CharacterService>(
       () => servicesModule.characterService(gh<_i361.Dio>()),
     );
@@ -79,6 +94,8 @@ extension GetItInjectableX on _i174.GetIt {
     return this;
   }
 }
+
+class _$StorageModule extends _i213.StorageModule {}
 
 class _$ServicesModule extends _i407.ServicesModule {}
 

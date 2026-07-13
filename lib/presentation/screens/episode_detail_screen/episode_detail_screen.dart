@@ -4,6 +4,7 @@ import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 
 import '../../../features/episodes/domain/model/episode.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../themes/app_theme.dart';
 import '../../widgets/character_avatar_circle.dart';
 import '../../widgets/episode_code_x.dart';
 import 'episode_detail_screen_widget_model.dart';
@@ -21,10 +22,19 @@ class EpisodeDetailScreen extends ElementaryWidget<IEpisodeDetailWidgetModel> {
     return Builder(
       builder: (context) {
         final l10n = AppLocalizations.of(context)!;
+        final designs = context.designs;
 
         return Scaffold(
+          backgroundColor: designs.background,
           appBar: AppBar(
-            title: Text(episode.name),
+            backgroundColor: designs.background,
+            iconTheme: IconThemeData(color: designs.textPrimary),
+            title: Text(
+              episode.name,
+              style: context.textTheme.titleLarge?.copyWith(
+                color: designs.textPrimary,
+              ),
+            ),
           ),
           body: PinchToZoomScrollableWidget(
             child: SingleChildScrollView(
@@ -33,8 +43,6 @@ class EpisodeDetailScreen extends ElementaryWidget<IEpisodeDetailWidgetModel> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _HeroBlock(episode: episode),
-                  const SizedBox(height: 24),
-                  _InfoSection(episode: episode, l10n: l10n),
                   const SizedBox(height: 24),
                   _CharactersSection(wm: wm, l10n: l10n),
                 ],
@@ -54,165 +62,79 @@ class _HeroBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
+    final s = episode.seasonNumber;
+    final e = episode.episodeNumber;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer,
+        gradient: LinearGradient(
+          colors: [
+            designs.primary.withValues(alpha: 0.15),
+            designs.surface,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _HeroNumber(
-                number:
-                    'S${episode.seasonNumber.toString().padLeft(2, '0')}',
-                label: 'Season',
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: designs.primary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Text(
-                  '/',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: theme.colorScheme.onSecondaryContainer,
-                    fontWeight: FontWeight.w300,
+                  'S${s.toString().padLeft(2, '0')}',
+                  style: context.textTheme.labelLarge?.copyWith(
+                    color: designs.onPrimary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
-              _HeroNumber(
-                number:
-                    'E${episode.episodeNumber.toString().padLeft(2, '0')}',
-                label: 'Episode',
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: designs.primary.withValues(alpha: 0.4),
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'E${e.toString().padLeft(2, '0')}',
+                  style: context.textTheme.labelLarge?.copyWith(
+                    color: designs.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             episode.name,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              color: theme.colorScheme.onSecondaryContainer,
+            style: context.textTheme.headlineSmall?.copyWith(
+              color: designs.textPrimary,
               fontWeight: FontWeight.w700,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             episode.airDate,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSecondaryContainer
-                  .withValues(alpha: 0.7),
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: designs.textSecondary,
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _HeroNumber extends StatelessWidget {
-  final String number;
-  final String label;
-
-  const _HeroNumber({required this.number, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      children: [
-        Text(
-          number,
-          style: theme.textTheme.displaySmall?.copyWith(
-            color: theme.colorScheme.onSecondaryContainer,
-            fontWeight: FontWeight.w900,
-            fontFamily: 'monospace',
-          ),
-        ),
-        Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSecondaryContainer
-                .withValues(alpha: 0.7),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _InfoSection extends StatelessWidget {
-  final Episode episode;
-  final AppLocalizations l10n;
-
-  const _InfoSection({required this.episode, required this.l10n});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          episode.name,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        _EpisodeInfoRow(
-          label: l10n.detailEpisode,
-          value: episode.seasonEpisodeLabel,
-        ),
-        const SizedBox(height: 4),
-        _EpisodeInfoRow(
-          label: l10n.detailAirDate,
-          value: episode.airDate,
-        ),
-      ],
-    );
-  }
-}
-
-class _EpisodeInfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _EpisodeInfoRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 100,
-          child: Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -225,7 +147,7 @@ class _CharactersSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
     final characterIds = wm.characterIds;
 
     if (characterIds.isEmpty) {
@@ -237,8 +159,8 @@ class _CharactersSection extends StatelessWidget {
       children: [
         Text(
           l10n.sectionCharactersCount(characterIds.length),
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: theme.colorScheme.primary,
+          style: context.textTheme.titleMedium?.copyWith(
+            color: designs.primary,
             fontWeight: FontWeight.w700,
           ),
         ),

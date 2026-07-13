@@ -1,11 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 
 import '../../../features/characters/domain/model/character.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../themes/app_theme.dart';
 import '../../widgets/character_gender_x.dart';
+import '../../widgets/character_status_x.dart';
 import '../../widgets/detail_widgets.dart';
-
 class CharacterDetailScreen extends StatelessWidget {
   final Character character;
 
@@ -14,11 +16,19 @@ class CharacterDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+    final designs = context.designs;
 
     return Scaffold(
+      backgroundColor: designs.background,
       appBar: AppBar(
-        title: Text(character.name),
+        backgroundColor: designs.background,
+        iconTheme: IconThemeData(color: designs.textPrimary),
+        title: Text(
+          character.name,
+          style: context.textTheme.titleLarge?.copyWith(
+            color: designs.textPrimary,
+          ),
+        ),
       ),
       body: PinchToZoomScrollableWidget(
         child: SingleChildScrollView(
@@ -30,27 +40,22 @@ class CharacterDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 child: AspectRatio(
                   aspectRatio: 1,
-                  child: Image.network(
-                    character.image,
+                  child: CachedNetworkImage(
+                    imageUrl: character.image,
                     fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return ColoredBox(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return ColoredBox(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: Icon(
-                          Icons.broken_image,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      );
-                    },
+                    placeholder: (context, url) => ColoredBox(
+                      color: designs.surface,
+                      child: Center(
+                        child: CircularProgressIndicator(color: designs.primary),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => ColoredBox(
+                      color: designs.surface,
+                      child: Icon(
+                        Icons.broken_image,
+                        color: designs.textSecondary,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -61,15 +66,15 @@ class CharacterDetailScreen extends StatelessWidget {
                     width: 12,
                     height: 12,
                     decoration: BoxDecoration(
-                      color: _statusColor(character.status, theme),
+                      color: character.statusColor,
                       shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '${character.status} • ${character.species}',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface,
+                    style: context.textTheme.titleMedium?.copyWith(
+                      color: designs.textPrimary,
                     ),
                   ),
                 ],
@@ -106,9 +111,7 @@ class CharacterDetailScreen extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   for (final id in character.episodeIds)
-                    DetailChip(
-                      label: 'S${(id ~/ 20 + 1).toString().padLeft(2, '0')}E${(id % 20 + 1).toString().padLeft(2, '0')}',
-                    ),
+                    DetailChip(label: _episodeLabel(id)),
                 ],
               ),
             ],
@@ -118,14 +121,9 @@ class CharacterDetailScreen extends StatelessWidget {
     );
   }
 
-  Color _statusColor(String status, ThemeData theme) {
-    switch (status.toLowerCase()) {
-      case 'alive':
-        return Colors.green;
-      case 'dead':
-        return Colors.red;
-      default:
-        return theme.colorScheme.onSurfaceVariant;
-    }
+  String _episodeLabel(int id) {
+    final season = id ~/ 20 + 1;
+    final episode = id % 20 + 1;
+    return 'S${season.toString().padLeft(2, '0')}E${episode.toString().padLeft(2, '0')}';
   }
 }

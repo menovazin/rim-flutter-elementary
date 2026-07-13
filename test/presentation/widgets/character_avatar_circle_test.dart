@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rim_elementary/presentation/widgets/character_avatar_circle.dart';
+import 'package:rim_elementary/themes/app_theme.dart';
 
 import '../../helpers/path_provider_mock.dart';
 
@@ -11,8 +12,9 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(
+      MaterialApp(
+        theme: lightTheme(fontFamily: kFontFamilyNunito),
+        home: const Scaffold(
           body: CharacterAvatarCircle(
             characterId: 1,
             name: '#1',

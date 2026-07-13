@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import '../../../features/episodes/domain/model/episode.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
+import '../../../themes/app_theme.dart';
 import '../../widgets/episode_code_x.dart';
+import '../../widgets/grid_error_tile.dart';
 import 'episodes_screen_widget_model.dart';
 
 class EpisodesScreen extends ElementaryWidget<IEpisodesWidgetModel> {
@@ -59,29 +61,31 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final designs = context.designs;
 
     return EntityStateNotifierBuilder<List<Episode>>(
       listenableEntityState: widget.wm.episodesState,
-      loadingBuilder: (_, _) => const Center(
-        child: CircularProgressIndicator(),
+      loadingBuilder: (_, _) => Center(
+        child: CircularProgressIndicator(color: designs.primary),
       ),
       errorBuilder: (_, _, _) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(l10n.errorLoadingEpisodes),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: widget.wm.retry,
-              child: Text(l10n.retryButton),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: GridErrorTile(
+            message: l10n.errorLoadingEpisodes,
+            onRetry: widget.wm.retry,
+          ),
         ),
       ),
       builder: (_, episodes) {
         if (episodes == null || episodes.isEmpty) {
           return Center(
-            child: Text(l10n.tabEpisodes),
+            child: Text(
+              l10n.tabEpisodes,
+              style: context.textTheme.bodyLarge?.copyWith(
+                color: designs.textSecondary,
+              ),
+            ),
           );
         }
 
@@ -90,18 +94,21 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final episode = episodes[index];
-                    return _EpisodeListItem(
-                      episode: episode,
-                      onTap: () => context.router.push(
-                        EpisodeDetailRoute(episode: episode),
-                      ),
-                    );
-                  },
-                  childCount: episodes.length,
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final episode = episodes[index];
+                      return _EpisodeListItem(
+                        episode: episode,
+                        onTap: () => context.router.push(
+                          EpisodeDetailRoute(episode: episode),
+                        ),
+                      );
+                    },
+                    childCount: episodes.length,
+                  ),
                 ),
               ),
               ValueListenableBuilder<bool>(
@@ -110,10 +117,12 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
                   if (!isLoadingMore) {
                     return const SliverToBoxAdapter();
                   }
-                  return const SliverToBoxAdapter(
+                  return SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Center(child: CircularProgressIndicator()),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: CircularProgressIndicator(color: designs.primary),
+                      ),
                     ),
                   );
                 },
@@ -127,11 +136,9 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
                   return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: ElevatedButton(
-                          onPressed: widget.wm.retry,
-                          child: Text(l10n.retryButton),
-                        ),
+                      child: GridErrorTile(
+                        message: l10n.errorLoadingEpisodes,
+                        onRetry: widget.wm.retry,
                       ),
                     ),
                   );
@@ -156,83 +163,65 @@ class _EpisodeListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
+    final s = episode.seasonNumber;
+    final e = episode.episodeNumber;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(12),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: designs.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        leading: Container(
+          width: 48,
+          height: 48,
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest,
+            color: designs.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Row(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _SeasonEpisodeBadge(episode: episode),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      episode.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      episode.airDate,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+              Text(
+                'S${s.toString().padLeft(2, '0')}',
+                style: context.textTheme.labelSmall?.copyWith(
+                  color: designs.primary,
+                  fontWeight: FontWeight.w700,
+                  height: 1,
                 ),
               ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.onSurfaceVariant,
-                size: 20,
+              Text(
+                'E${e.toString().padLeft(2, '0')}',
+                style: context.textTheme.labelSmall?.copyWith(
+                  color: designs.primary.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 10,
+                  height: 1.2,
+                ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _SeasonEpisodeBadge extends StatelessWidget {
-  final Episode episode;
-
-  const _SeasonEpisodeBadge({required this.episode});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        episode.seasonEpisodeLabel,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.onSecondaryContainer,
-          fontWeight: FontWeight.w700,
-          fontFamily: 'monospace',
+        title: Text(
+          episode.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.textTheme.titleSmall?.copyWith(
+            color: designs.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
+        subtitle: Text(
+          episode.airDate,
+          style: context.textTheme.bodySmall?.copyWith(
+            color: designs.textSecondary,
+          ),
+        ),
+        trailing: Icon(Icons.chevron_right, color: designs.textSecondary),
+        onTap: onTap,
       ),
     );
   }

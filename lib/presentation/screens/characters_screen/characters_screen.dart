@@ -1,15 +1,18 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:elementary/elementary.dart';
 import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 
-import '../../../config/urls.dart';
 import '../../../features/characters/domain/model/character.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
+import '../../../themes/app_theme.dart';
 import '../../widgets/adaptive_sliver_grid.dart';
+import '../../widgets/character_status_x.dart';
+import '../../widgets/grid_error_tile.dart';
 import 'characters_screen_widget_model.dart';
 
 class CharactersScreen extends ElementaryWidget<ICharactersWidgetModel> {
@@ -60,29 +63,31 @@ class _CharactersBodyState extends State<_CharactersBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final designs = context.designs;
 
     return EntityStateNotifierBuilder<List<Character>>(
       listenableEntityState: widget.wm.charactersState,
-      loadingBuilder: (_, _) => const Center(
-        child: CircularProgressIndicator(),
+      loadingBuilder: (_, _) => Center(
+        child: CircularProgressIndicator(color: designs.primary),
       ),
       errorBuilder: (_, _, _) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(l10n.errorLoadingCharacters),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: widget.wm.retry,
-              child: Text(l10n.retryButton),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: GridErrorTile(
+            message: l10n.errorLoadingCharacters,
+            onRetry: widget.wm.retry,
+          ),
         ),
       ),
       builder: (_, characters) {
         if (characters == null || characters.isEmpty) {
           return Center(
-            child: Text(l10n.tabCharacters),
+            child: Text(
+              l10n.tabCharacters,
+              style: context.textTheme.bodyLarge?.copyWith(
+                color: designs.textSecondary,
+              ),
+            ),
           );
         }
 
@@ -110,10 +115,12 @@ class _CharactersBodyState extends State<_CharactersBody> {
                   if (!isLoadingMore) {
                     return const SliverToBoxAdapter();
                   }
-                  return const SliverToBoxAdapter(
+                  return SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Center(child: CircularProgressIndicator()),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: CircularProgressIndicator(color: designs.primary),
+                      ),
                     ),
                   );
                 },
@@ -127,11 +134,9 @@ class _CharactersBodyState extends State<_CharactersBody> {
                   return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: ElevatedButton(
-                          onPressed: widget.wm.retry,
-                          child: Text(l10n.retryButton),
-                        ),
+                      child: GridErrorTile(
+                        message: l10n.errorLoadingCharacters,
+                        onRetry: widget.wm.retry,
                       ),
                     ),
                   );
@@ -156,13 +161,13 @@ class _CharacterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final designs = context.designs;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
+          color: designs.surface,
           borderRadius: BorderRadius.circular(12),
         ),
         clipBehavior: Clip.antiAlias,
@@ -170,33 +175,29 @@ class _CharacterCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: Image.network(
-                '${AppUrls.base}${character.image}',
+              child: CachedNetworkImage(
+                imageUrl: character.image,
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  }
-                  return ColoredBox(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    child: const Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                placeholder: (context, url) => ColoredBox(
+                  color: designs.background,
+                  child: Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: designs.primary,
                       ),
                     ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return ColoredBox(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    child: Icon(
-                      Icons.broken_image,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  );
-                },
+                  ),
+                ),
+                errorWidget: (context, url, error) => ColoredBox(
+                  color: designs.background,
+                  child: Icon(
+                    Icons.broken_image,
+                    color: designs.textSecondary,
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -208,8 +209,8 @@ class _CharacterCard extends StatelessWidget {
                     character.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: theme.colorScheme.onSurface,
+                    style: context.textTheme.titleSmall?.copyWith(
+                      color: designs.textPrimary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -220,7 +221,7 @@ class _CharacterCard extends StatelessWidget {
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: _statusColor(character.status, theme),
+                          color: character.statusColor,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -230,8 +231,8 @@ class _CharacterCard extends StatelessWidget {
                           '${character.status} • ${character.species}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color: designs.textSecondary,
                           ),
                         ),
                       ),
@@ -244,16 +245,5 @@ class _CharacterCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Color _statusColor(String status, ThemeData theme) {
-    switch (status.toLowerCase()) {
-      case 'alive':
-        return Colors.green;
-      case 'dead':
-        return Colors.red;
-      default:
-        return theme.colorScheme.onSurfaceVariant;
-    }
   }
 }
