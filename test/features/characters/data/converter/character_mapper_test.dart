@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rim_elementary/config/urls.dart';
 import 'package:rim_elementary/features/characters/data/converter/character_mapper.dart';
 import 'package:rim_elementary/features/characters/data/dto/character_dto.dart';
 import 'package:rim_elementary/features/characters/domain/model/character.dart';
@@ -39,6 +40,24 @@ void main() {
       expect(character.locationName, 'Citadel of Ricks');
       expect(character.locationUrl, 'https://api/location/3');
       expect(character.episodeIds, [1, 10, 42]);
+    });
+
+    test('resolves relative image path against AppUrls.base', () {
+      const dto = CharacterDto(
+        id: 1,
+        name: 'Rick Sanchez',
+        status: 'Alive',
+        species: 'Human',
+        gender: 'Male',
+        image: '/character/avatar/1.jpeg',
+      );
+
+      final character = mapCharacter(dto);
+
+      expect(
+        character.image,
+        '${AppUrls.base}/character/avatar/1.jpeg',
+      );
     });
 
     test('extracts episode ids from URLs and drops invalid ones', () {
