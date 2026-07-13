@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 
 import 'app/app.dart';
 import 'di/di.dart';
-import 'routes/router.dart';
-import 'services/theme_controller.dart';
 
 Future<void> runner() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await configureDependencies();
-  await getIt<ThemeController>().init();
+  await di.themeController.init();
 
-  final router = getIt<AppRouter>();
+  final router = di.appRouter;
 
   runApp(
     App(
       router: router,
-      themeController: getIt<ThemeController>(),
+      themeController: di.themeController,
     ),
   );
 }

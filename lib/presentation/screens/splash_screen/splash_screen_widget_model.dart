@@ -5,16 +5,14 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 
 import '../../../di/di.dart';
-import '../../../routes/router.dart';
 import '../../../routes/router.gr.dart';
-import '../../../services/token_service.dart';
 import 'splash_screen.dart';
 import 'splash_screen_model.dart';
 
 SplashWidgetModel splashWidgetModelFactory(BuildContext context) {
   return SplashWidgetModel(
-    SplashModel(getIt<ITokenService>()),
-    getIt<AppRouter>(),
+    SplashModel(di.tokenService),
+    di.appRouter,
   );
 }
 

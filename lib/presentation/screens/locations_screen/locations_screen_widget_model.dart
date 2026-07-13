@@ -6,14 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../di/di.dart';
-import '../../../features/locations/domain/contract/location_repository.dart';
 import '../../../features/locations/domain/model/location.dart';
 import 'locations_screen.dart';
 import 'locations_screen_model.dart';
 
 LocationsWidgetModel locationsWidgetModelFactory(BuildContext context) {
   return LocationsWidgetModel(
-    LocationsModel(getIt<ILocationRepository>()),
+    LocationsModel(di.locationRepository),
   );
 }
 

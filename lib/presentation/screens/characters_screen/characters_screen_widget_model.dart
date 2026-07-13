@@ -6,14 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../di/di.dart';
-import '../../../features/characters/domain/contract/character_repository.dart';
 import '../../../features/characters/domain/model/character.dart';
 import 'characters_screen.dart';
 import 'characters_screen_model.dart';
 
 CharactersWidgetModel charactersWidgetModelFactory(BuildContext context) {
   return CharactersWidgetModel(
-    CharactersModel(getIt<ICharacterRepository>()),
+    CharactersModel(di.characterRepository),
   );
 }
 

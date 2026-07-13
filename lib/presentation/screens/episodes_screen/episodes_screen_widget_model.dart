@@ -6,14 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../di/di.dart';
-import '../../../features/episodes/domain/contract/episode_repository.dart';
 import '../../../features/episodes/domain/model/episode.dart';
 import 'episodes_screen.dart';
 import 'episodes_screen_model.dart';
 
 EpisodesWidgetModel episodesWidgetModelFactory(BuildContext context) {
   return EpisodesWidgetModel(
-    EpisodesModel(getIt<IEpisodeRepository>()),
+    EpisodesModel(di.episodeRepository),
   );
 }
 

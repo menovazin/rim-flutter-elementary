@@ -3,16 +3,14 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 
 import '../../../di/di.dart';
-import '../../../routes/router.dart';
 import '../../../routes/router.gr.dart';
-import '../../../services/token_service.dart';
 import 'shell_screen.dart';
 import 'shell_screen_model.dart';
 
 ShellWidgetModel shellWidgetModelFactory(BuildContext context) {
   return ShellWidgetModel(
-    ShellModel(getIt<ITokenService>()),
-    getIt<AppRouter>(),
+    ShellModel(di.tokenService),
+    di.appRouter,
   );
 }
 
@@ -27,8 +25,13 @@ class ShellWidgetModel extends WidgetModel<ShellScreen, ShellModel>
     await model.signOut();
     await _router.replaceAll([const LoginRoute()]);
   }
+
+  @override
+  Future<void> switchTheme() => di.themeController.switchTheme();
 }
 
 abstract interface class IShellWidgetModel implements IWidgetModel {
   Future<void> signOut();
+
+  Future<void> switchTheme();
 }
