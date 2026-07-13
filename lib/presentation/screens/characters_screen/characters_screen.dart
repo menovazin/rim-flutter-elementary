@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:elementary/elementary.dart';
 import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +9,8 @@ import '../../../features/characters/domain/model/character.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
-import '../../widgets/adaptive_sliver_grid.dart';
-import '../../widgets/character_status_x.dart';
+import '../../../utils/grid_utils.dart';
+import '../../widgets/character_card.dart';
 import '../../widgets/grid_error_tile.dart';
 import 'characters_screen_widget_model.dart';
 
@@ -96,18 +95,28 @@ class _CharactersBodyState extends State<_CharactersBody> {
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              AdaptiveSliverGrid(
-                itemCount: characters.length,
-                itemBuilder: (context, index) {
-                  final character = characters[index];
-                  return _CharacterCard(
-                    character: character,
-                    onTap: () => context.router.push(
-                      CharacterDetailRoute(character: character),
-                    ),
-                  );
-                },
-                childAspectRatio: 0.72,
+              SliverPadding(
+                padding: const EdgeInsets.all(12),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: context.gridCrossAxisCount,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.72,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final character = characters[index];
+                      return CharacterCard(
+                        character: character,
+                        onTap: () => context.router.push(
+                          CharacterDetailRoute(character: character),
+                        ),
+                      );
+                    },
+                    childCount: characters.length,
+                  ),
+                ),
               ),
               ValueListenableBuilder<bool>(
                 valueListenable: widget.wm.isLoadingMore,
@@ -146,104 +155,6 @@ class _CharactersBodyState extends State<_CharactersBody> {
           ),
         );
       },
-    );
-  }
-}
-
-class _CharacterCard extends StatelessWidget {
-  final Character character;
-  final VoidCallback onTap;
-
-  const _CharacterCard({
-    required this.character,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final designs = context.designs;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: designs.surface,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: CachedNetworkImage(
-                imageUrl: character.image,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => ColoredBox(
-                  color: designs.background,
-                  child: Center(
-                    child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: designs.primary,
-                      ),
-                    ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => ColoredBox(
-                  color: designs.background,
-                  child: Icon(
-                    Icons.broken_image,
-                    color: designs.textSecondary,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    character.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.titleSmall?.copyWith(
-                      color: designs.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: character.statusColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          '${character.status} • ${character.species}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color: designs.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

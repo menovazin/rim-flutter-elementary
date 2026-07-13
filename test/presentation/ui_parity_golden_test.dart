@@ -7,7 +7,9 @@ import 'package:rim_elementary/features/characters/domain/model/character.dart';
 import 'package:rim_elementary/features/episodes/domain/model/episode.dart';
 import 'package:rim_elementary/features/locations/domain/model/location.dart';
 import 'package:rim_elementary/l10n/generated/app_localizations.dart';
+import 'package:rim_elementary/presentation/screens/character_detail_screen/character_detail_screen.dart';
 import 'package:rim_elementary/presentation/screens/episode_detail_screen/episode_detail_screen.dart';
+import 'package:rim_elementary/presentation/widgets/character_card.dart';
 import 'package:rim_elementary/presentation/screens/login_screen/login_screen.dart';
 import 'package:rim_elementary/presentation/screens/login_screen/login_screen_model.dart';
 import 'package:rim_elementary/presentation/screens/login_screen/login_screen_widget_model.dart';
@@ -73,6 +75,21 @@ void main() {
     locationName: 'Earth',
     locationUrl: '',
     episodeIds: [1],
+  );
+
+  const characterForDetail = Character(
+    id: 1,
+    name: 'Rick Sanchez',
+    status: 'Alive',
+    species: 'Human',
+    type: '',
+    gender: 'Male',
+    image: '',
+    originName: 'Earth (C-137)',
+    originUrl: '',
+    locationName: 'Citadel of Ricks',
+    locationUrl: '',
+    episodeIds: [1, 2, 3],
   );
 
   setUpAll(() {
@@ -159,6 +176,19 @@ void main() {
           ),
         );
       }, tags: ['golden']);
+
+      testWidgets('Character detail golden $suffix', (tester) async {
+        await pumpGolden(
+          tester,
+          CharacterDetailScreen(character: characterForDetail),
+          dark: dark,
+        );
+
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile('goldens/character_detail_screen_$suffix.png'),
+        );
+      }, tags: ['golden']);
     }
   });
 
@@ -202,7 +232,10 @@ void main() {
               child: SizedBox(
                 width: 180,
                 height: 250,
-                child: _GoldenCharacterCard(character: character),
+                child: CharacterCard(
+                  character: character,
+                  onTap: () {},
+                ),
               ),
             ),
           ),
@@ -253,73 +286,6 @@ void main() {
       }, tags: ['golden']);
     }
   });
-}
-
-class _GoldenCharacterCard extends StatelessWidget {
-  final Character character;
-
-  const _GoldenCharacterCard({required this.character});
-
-  @override
-  Widget build(BuildContext context) {
-    final designs = context.designs;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: designs.surface,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: ColoredBox(
-              color: designs.background,
-              child: Icon(Icons.person, color: designs.textSecondary, size: 48),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  character.name,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    color: designs.textPrimary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF34E27A),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        '${character.status} • ${character.species}',
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: designs.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _GoldenEpisodeListItem extends StatelessWidget {

@@ -5,9 +5,11 @@ import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 import '../../../features/characters/domain/model/character.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../themes/app_theme.dart';
+import '../../../utils/avatar_url_utils.dart';
 import '../../widgets/character_gender_x.dart';
 import '../../widgets/character_status_x.dart';
 import '../../widgets/detail_widgets.dart';
+
 class CharacterDetailScreen extends StatelessWidget {
   final Character character;
 
@@ -17,6 +19,7 @@ class CharacterDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final designs = context.designs;
+    final imageUrl = AvatarUrlUtils.avatarUrlFromId(character.id);
 
     return Scaffold(
       backgroundColor: designs.background,
@@ -41,7 +44,7 @@ class CharacterDetailScreen extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 1,
                   child: CachedNetworkImage(
-                    imageUrl: character.image,
+                    imageUrl: imageUrl,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => ColoredBox(
                       color: designs.surface,
@@ -121,9 +124,5 @@ class CharacterDetailScreen extends StatelessWidget {
     );
   }
 
-  String _episodeLabel(int id) {
-    final season = id ~/ 20 + 1;
-    final episode = id % 20 + 1;
-    return 'S${season.toString().padLeft(2, '0')}E${episode.toString().padLeft(2, '0')}';
-  }
+  String _episodeLabel(int id) => 'E${id.toString().padLeft(2, '0')}';
 }
