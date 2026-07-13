@@ -36,6 +36,7 @@ dependencies:
   shared_preferences: ^2.2.3
 
   # Product packages
+  cached_network_image: ^3.4.1
   flutter_drawer_menu: ^0.1.5
   pinch_to_zoom_scrollable: ^0.1.0
 
@@ -64,6 +65,7 @@ dev_dependencies:
   # Testing
   mocktail: ^1.0.5
   golden_toolkit: ^0.15.0
+  sqflite_common_ffi: ^2.3.6
 
 flutter:
   generate: true

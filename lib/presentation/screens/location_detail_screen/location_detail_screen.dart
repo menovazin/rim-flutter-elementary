@@ -1,9 +1,7 @@
 import 'package:elementary/elementary.dart';
-import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 
-import '../../../features/characters/domain/model/character.dart';
 import '../../../features/locations/domain/model/location.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../widgets/character_avatar_circle.dart';
@@ -77,7 +75,6 @@ class LocationDetailScreen
                   const SizedBox(height: 24),
                   _ResidentsSection(
                     wm: wm,
-                    location: location,
                     l10n: l10n,
                   ),
                 ],
@@ -120,20 +117,19 @@ class _DimensionBadge extends StatelessWidget {
 
 class _ResidentsSection extends StatelessWidget {
   final ILocationDetailWidgetModel wm;
-  final Location location;
   final AppLocalizations l10n;
 
   const _ResidentsSection({
     required this.wm,
-    required this.location,
     required this.l10n,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final residentIds = wm.residentIds;
 
-    if (location.residentIds.isEmpty) {
+    if (residentIds.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -155,54 +151,37 @@ class _ResidentsSection extends StatelessWidget {
       );
     }
 
-    return EntityStateNotifierBuilder<List<Character>>(
-      listenableEntityState: wm.residentsState,
-      loadingBuilder: (_, _) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-      errorBuilder: (_, _, _) => Center(
-        child: Text(
-          l10n.errorLoadingCharacters,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.error,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.sectionResidentsCount(residentIds.length),
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.w700,
           ),
         ),
-      ),
-      builder: (_, residents) {
-        if (residents == null || residents.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.sectionResidentsCount(residents.length),
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 90,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: residents.length,
-                itemBuilder: (context, index) {
-                  final resident = residents[index];
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      right: index < residents.length - 1 ? 12 : 0,
-                    ),
-                    child: CharacterAvatarCircle(character: resident),
-                  );
-                },
-              ),
-            ),
-          ],
-        );
-      },
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 90,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: residentIds.length,
+            itemBuilder: (context, index) {
+              final id = residentIds[index];
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: index < residentIds.length - 1 ? 12 : 0,
+                ),
+                child: CharacterAvatarCircle(
+                  characterId: id,
+                  name: '#$id',
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

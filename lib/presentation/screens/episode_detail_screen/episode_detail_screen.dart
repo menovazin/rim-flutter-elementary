@@ -1,9 +1,7 @@
 import 'package:elementary/elementary.dart';
-import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 
-import '../../../features/characters/domain/model/character.dart';
 import '../../../features/episodes/domain/model/episode.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../widgets/character_avatar_circle.dart';
@@ -228,51 +226,43 @@ class _CharactersSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final characterIds = wm.characterIds;
 
-    return EntityStateNotifierBuilder<List<Character>>(
-      listenableEntityState: wm.charactersState,
-      loadingBuilder: (_, _) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-      errorBuilder: (_, _, _) => Center(
-        child: Text(
-          l10n.errorLoadingCharacters,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.error,
+    if (characterIds.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.sectionCharactersCount(characterIds.length),
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.w700,
           ),
         ),
-      ),
-      builder: (_, characters) {
-        if (characters == null || characters.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.sectionCharactersCount(characters.length),
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 90,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: characters.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  final character = characters[index];
-                  return CharacterAvatarCircle(character: character);
-                },
-              ),
-            ),
-          ],
-        );
-      },
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 90,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: characterIds.length,
+            itemBuilder: (context, index) {
+              final id = characterIds[index];
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: index < characterIds.length - 1 ? 12 : 0,
+                ),
+                child: CharacterAvatarCircle(
+                  characterId: id,
+                  name: '#$id',
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

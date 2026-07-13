@@ -11,7 +11,4 @@ abstract class CharacterService {
 
   @GET('')
   Future<CharacterResponseDto> getCharacters(@Query('page') int page);
-
-  @GET('/{ids}')
-  Future<dynamic> getMultipleCharacters(@Path('ids') String ids);
 }

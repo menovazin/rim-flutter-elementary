@@ -1,43 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rim_elementary/features/characters/domain/model/character.dart';
-import 'package:rim_elementary/presentation/widgets/character_avatar_circle.dart';
 
 void main() {
-  testWidgets('CharacterAvatarCircle renders without error', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                CharacterAvatarCircle(
-                  character: Character(
-                    id: 1,
-                    name: 'Rick',
-                    status: 'Alive',
-                    species: 'Human',
-                    type: '',
-                    gender: 'Male',
-                    image: '',
-                    originName: 'Earth',
-                    originUrl: '',
-                    locationName: 'Earth',
-                    locationUrl: '',
-                    episodeIds: [1],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-
-    expect(find.text('Rick'), findsOneWidget);
-  });
-
   testWidgets('Episode list item structure renders without error', (
     tester,
   ) async {

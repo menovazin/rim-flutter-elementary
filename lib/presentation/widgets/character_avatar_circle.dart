@@ -1,53 +1,78 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../config/urls.dart';
-import '../../features/characters/domain/model/character.dart';
+import '../../utils/avatar_url_utils.dart';
 
 class CharacterAvatarCircle extends StatelessWidget {
-  final Character character;
-  final double radius;
+  final int characterId;
+  final String? name;
 
   const CharacterAvatarCircle({
     super.key,
-    required this.character,
-    this.radius = 24,
+    required this.characterId,
+    this.name,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(
-          radius: radius,
-          backgroundImage: character.image.isNotEmpty
-              ? NetworkImage('${AppUrls.base}${character.image}')
-              : null,
-          child: character.image.isEmpty
-              ? Text(
-                  character.name.isNotEmpty
-                      ? character.name[0].toUpperCase()
-                      : '?',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                )
-              : null,
+    final theme = Theme.of(context);
+    final url = AvatarUrlUtils.avatarUrlFromId(characterId);
+
+    final avatar = ClipOval(
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: CachedNetworkImage(
+          imageUrl: url,
+          fit: BoxFit.cover,
+          placeholder: (_, _) => ColoredBox(
+            color: theme.colorScheme.surfaceContainerHighest,
+            child: Center(
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+          errorWidget: (_, _, _) => ColoredBox(
+            color: theme.colorScheme.surfaceContainerHighest,
+            child: Icon(
+              Icons.person,
+              size: 24,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ),
-        const SizedBox(height: 4),
-        SizedBox(
-          width: radius * 3,
-          child: Text(
-            character.name,
+      ),
+    );
+
+    if (name == null || name!.isEmpty) {
+      return avatar;
+    }
+
+    return SizedBox(
+      width: 64,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          avatar,
+          const SizedBox(height: 4),
+          Text(
+            name!,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontSize: 10,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
