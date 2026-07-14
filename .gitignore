@@ -54,7 +54,11 @@ app.*.map.json
 .agents/
 .cline/
 .clinerules/
+.cursor/
+.github/
+.scratch/
 .skills/
+.windsurf/
 design-refs/
 arch-refs/
 HOWTO.md
@@ -64,3 +68,5 @@ docs/
 # OpenSpec
 openspec
 .opencode/
+.scratch/
+issues/
