@@ -61,6 +61,7 @@ app.*.map.json
 .windsurf/
 design-refs/
 arch-refs/
+AGENTS.md
 HOWTO.md
 CONTEXT.md
 docs/
