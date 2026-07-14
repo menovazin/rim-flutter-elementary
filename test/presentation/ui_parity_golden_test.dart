@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rim_elementary/features/characters/domain/model/character.dart';
@@ -13,7 +15,11 @@ import 'package:rim_elementary/presentation/widgets/character_card.dart';
 import 'package:rim_elementary/presentation/screens/login_screen/login_screen.dart';
 import 'package:rim_elementary/presentation/screens/login_screen/login_screen_model.dart';
 import 'package:rim_elementary/presentation/screens/login_screen/login_screen_widget_model.dart';
+import 'package:rim_elementary/presentation/screens/splash_screen/splash_screen.dart';
+import 'package:rim_elementary/presentation/screens/splash_screen/splash_screen_model.dart';
+import 'package:rim_elementary/presentation/screens/splash_screen/splash_screen_widget_model.dart';
 import 'package:rim_elementary/presentation/screens/location_detail_screen/location_detail_screen.dart';
+import 'package:rim_elementary/routes/router.gr.dart';
 import 'package:rim_elementary/themes/app_theme.dart';
 
 import '../helpers/path_provider_mock.dart';
@@ -93,6 +99,7 @@ void main() {
   );
 
   setUpAll(() {
+    registerFallbackValue(const ShellRoute());
     setUpPathProviderMock();
     HttpOverrides.global = _TestHttpOverrides();
   });
@@ -187,6 +194,40 @@ void main() {
         await expectLater(
           find.byType(MaterialApp),
           matchesGoldenFile('goldens/character_detail_screen_$suffix.png'),
+        );
+      }, tags: ['golden']);
+    }
+  });
+
+  group('splash screen', () {
+    SplashWidgetModel splashWm() {
+      final tokenService = TokenServiceMock();
+      final router = AppRouterMock();
+
+      when(() => tokenService.readToken()).thenAnswer(
+        (_) => Completer<String?>().future,
+      );
+      when(() => router.replace(any())).thenAnswer((_) => Future<void>.value());
+
+      return SplashWidgetModel(
+        SplashModel(tokenService),
+        router,
+      );
+    }
+
+    for (final dark in [false, true]) {
+      final suffix = dark ? 'dark' : 'light';
+
+      testWidgets('Splash screen golden $suffix', (tester) async {
+        await pumpGolden(
+          tester,
+          SplashScreen(wmFactory: (_) => splashWm()),
+          dark: dark,
+        );
+
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile('goldens/splash_screen_$suffix.png'),
         );
       }, tags: ['golden']);
     }

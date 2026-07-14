@@ -39,7 +39,7 @@ void main() {
             .thenAnswer((_) async => 'secret_token');
 
         tester.init();
-        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(const Duration(milliseconds: 700));
 
         verify(() => router.replace(const ShellRoute())).called(1);
         verifyNever(() => router.replace(const LoginRoute()));
@@ -53,7 +53,7 @@ void main() {
         when(() => tokenService.readToken()).thenAnswer((_) async => null);
 
         tester.init();
-        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(const Duration(milliseconds: 700));
 
         verify(() => router.replace(const LoginRoute())).called(1);
         verifyNever(() => router.replace(const ShellRoute()));

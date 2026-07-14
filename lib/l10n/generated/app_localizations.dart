@@ -97,7 +97,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Rick and Morty'**
+  /// **'RIM FL EL'**
   String get appTitle;
 
   /// No description provided for @loginTitle.

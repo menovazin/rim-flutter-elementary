@@ -11,6 +11,24 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsBrandingGen {
+  const $AssetsBrandingGen();
+
+  /// File path: assets/branding/logo.png
+  AssetGenImage get logo => const AssetGenImage('assets/branding/logo.png');
+
+  /// File path: assets/branding/logo_android_12.png
+  AssetGenImage get logoAndroid12 =>
+      const AssetGenImage('assets/branding/logo_android_12.png');
+
+  /// File path: assets/branding/logo_splash.png
+  AssetGenImage get logoSplash =>
+      const AssetGenImage('assets/branding/logo_splash.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [logo, logoAndroid12, logoSplash];
+}
+
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
@@ -25,6 +43,7 @@ class $AssetsImagesGen {
 class Assets {
   const Assets._();
 
+  static const $AssetsBrandingGen branding = $AssetsBrandingGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
 }
 

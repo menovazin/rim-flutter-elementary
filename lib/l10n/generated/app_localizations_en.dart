@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Rick and Morty';
+  String get appTitle => 'RIM FL EL';
 
   @override
   String get loginTitle => 'Welcome';
