@@ -34,6 +34,9 @@
   "errorLoadingCharacters": "Error loading characters",
   "errorLoadingEpisodes": "Error loading episodes",
   "errorLoadingLocations": "Error loading locations",
+  "errorNetwork": "Check your connection and try again",
+  "errorServer": "Server error. Please try again later",
+  "errorUnknown": "Something went wrong. Please try again",
   "sectionResidentsCount": "Residents ({count})",
   "@sectionResidentsCount": {
     "placeholders": {

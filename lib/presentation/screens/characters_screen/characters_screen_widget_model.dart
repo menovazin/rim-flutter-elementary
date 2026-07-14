@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 
 import '../../../di/di.dart';
 import '../../../features/characters/domain/model/character.dart';
+import '../../../services/app_error.dart';
+import '../../../utils/app_error_utils.dart';
 import 'characters_screen.dart';
 import 'characters_screen_model.dart';
 
@@ -21,7 +23,7 @@ class CharactersWidgetModel
     implements ICharactersWidgetModel {
   final _charactersState = EntityStateNotifier<List<Character>>();
   final _loadingMoreState = ValueNotifier<bool>(false);
-  final _hasErrorState = ValueNotifier<bool>(false);
+  final _errorState = ValueNotifier<AppError?>(null);
   int _currentPage = 1;
   bool _hasNext = true;
 
@@ -36,7 +38,7 @@ class CharactersWidgetModel
   ValueListenable<bool> get isLoadingMore => _loadingMoreState;
 
   @override
-  ValueListenable<bool> get hasError => _hasErrorState;
+  ValueListenable<AppError?> get error => _errorState;
 
   CharactersWidgetModel(super._model);
 
@@ -50,7 +52,7 @@ class CharactersWidgetModel
   void dispose() {
     _charactersState.dispose();
     _loadingMoreState.dispose();
-    _hasErrorState.dispose();
+    _errorState.dispose();
     super.dispose();
   }
 
@@ -59,7 +61,7 @@ class CharactersWidgetModel
     if (!_hasNext || _loadingMoreState.value) return;
 
     _loadingMoreState.value = true;
-    _hasErrorState.value = false;
+    _errorState.value = null;
 
     try {
       final result = await model.getCharacters(_currentPage);
@@ -68,7 +70,7 @@ class CharactersWidgetModel
       _currentPage = result.page + 1;
       _hasNext = result.hasNext;
     } on Exception catch (e) {
-      _hasErrorState.value = true;
+      _errorState.value = resolveAppError(e);
       _charactersState.error(e, _charactersState.value.data);
     } finally {
       _loadingMoreState.value = false;
@@ -79,14 +81,14 @@ class CharactersWidgetModel
   Future<void> refresh() async {
     _currentPage = 1;
     _hasNext = true;
-    _hasErrorState.value = false;
+    _errorState.value = null;
     _loadingMoreState.value = false;
     await _loadCharacters();
   }
 
   @override
   Future<void> retry() async {
-    _hasErrorState.value = false;
+    _errorState.value = null;
     await _loadCharacters();
   }
 
@@ -98,8 +100,9 @@ class CharactersWidgetModel
       _charactersState.content(result.items);
       _currentPage = result.page + 1;
       _hasNext = result.hasNext;
+      _errorState.value = null;
     } on Exception catch (e) {
-      _hasErrorState.value = true;
+      _errorState.value = resolveAppError(e);
       _charactersState.error(e, _charactersState.value.data);
     }
   }
@@ -109,7 +112,7 @@ abstract interface class ICharactersWidgetModel implements IWidgetModel {
   EntityValueListenable<List<Character>> get charactersState;
   bool get hasNext;
   ValueListenable<bool> get isLoadingMore;
-  ValueListenable<bool> get hasError;
+  ValueListenable<AppError?> get error;
   Future<void> loadMore();
   Future<void> refresh();
   Future<void> retry();

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rim_elementary/features/common/domain/model/page_result.dart';
 import 'package:rim_elementary/features/episodes/domain/model/episode.dart';
+import 'package:rim_elementary/services/app_error.dart';
 import 'package:rim_elementary/presentation/screens/episodes_screen/episodes_screen.dart';
 import 'package:rim_elementary/presentation/screens/episodes_screen/episodes_screen_model.dart';
 import 'package:rim_elementary/presentation/screens/episodes_screen/episodes_screen_widget_model.dart';
@@ -60,7 +61,7 @@ void main() {
         expect(wm.episodesState.value.data!.length, 20);
         expect(wm.hasNext, true);
         expect(wm.isLoadingMore.value, false);
-        expect(wm.hasError.value, false);
+        expect(wm.error.value, isNull);
 
         verify(() => repository.getEpisodes(1)).called(1);
       },
@@ -113,14 +114,14 @@ void main() {
     );
 
     testWidgetModel<EpisodesWidgetModel, EpisodesScreen>(
-      'loadMore sets hasError on exception',
+      'loadMore sets network error on AppException',
       setUpWm,
       (wm, tester, context) async {
         when(() => repository.getEpisodes(1)).thenAnswer(
           (_) async => createPageResult(page: 1, hasNext: true),
         );
         when(() => repository.getEpisodes(2)).thenThrow(
-          Exception('Network error'),
+          AppException(const AppError.network()),
         );
 
         tester.init();
@@ -129,7 +130,7 @@ void main() {
 
         await wm.loadMore();
 
-        expect(wm.hasError.value, true);
+        expect(wm.error.value, const AppError.network());
         expect(wm.isLoadingMore.value, false);
         expect(wm.episodesState.value.data!.length, 20);
       },
@@ -162,7 +163,7 @@ void main() {
 
         expect(wm.episodesState.value.data!.length, 10);
         expect(wm.hasNext, true);
-        expect(wm.hasError.value, false);
+        expect(wm.error.value, isNull);
 
         verify(() => repository.getEpisodes(1)).called(2);
       },
@@ -173,14 +174,14 @@ void main() {
       setUpWm,
       (wm, tester, context) async {
         when(() => repository.getEpisodes(1)).thenThrow(
-          Exception('Network error'),
+          AppException(const AppError.server()),
         );
 
         tester.init();
 
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
-        expect(wm.hasError.value, true);
+        expect(wm.error.value, const AppError.server());
 
         when(() => repository.getEpisodes(1)).thenAnswer(
           (_) async => createPageResult(page: 1, hasNext: true),
@@ -189,7 +190,7 @@ void main() {
         await wm.retry();
 
         expect(wm.episodesState.value.data!.length, 20);
-        expect(wm.hasError.value, false);
+        expect(wm.error.value, isNull);
 
         verify(() => repository.getEpisodes(1)).called(2);
       },

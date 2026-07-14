@@ -9,6 +9,7 @@ import '../../../features/characters/domain/model/character.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
+import '../../../utils/app_error_utils.dart';
 import '../../../utils/grid_utils.dart';
 import '../../widgets/character_card.dart';
 import '../../widgets/grid_error_tile.dart';
@@ -69,11 +70,11 @@ class _CharactersBodyState extends State<_CharactersBody> {
       loadingBuilder: (_, _) => Center(
         child: CircularProgressIndicator(color: designs.primary),
       ),
-      errorBuilder: (_, _, _) => Center(
+      errorBuilder: (_, error, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: GridErrorTile(
-            message: l10n.errorLoadingCharacters,
+            message: resolveAppError(error).localizedMessage(l10n),
             onRetry: widget.wm.retry,
           ),
         ),
@@ -134,17 +135,17 @@ class _CharactersBodyState extends State<_CharactersBody> {
                   );
                 },
               ),
-              ValueListenableBuilder<bool>(
-                valueListenable: widget.wm.hasError,
-                builder: (context, hasError, _) {
-                  if (!hasError || characters.isEmpty) {
+              ValueListenableBuilder(
+                valueListenable: widget.wm.error,
+                builder: (context, appError, _) {
+                  if (appError == null || characters.isEmpty) {
                     return const SliverToBoxAdapter();
                   }
                   return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: GridErrorTile(
-                        message: l10n.errorLoadingCharacters,
+                        message: appError.localizedMessage(l10n),
                         onRetry: widget.wm.retry,
                       ),
                     ),

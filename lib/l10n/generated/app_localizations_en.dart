@@ -73,6 +73,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorLoadingLocations => 'Error loading locations';
 
   @override
+  String get errorNetwork => 'Check your connection and try again';
+
+  @override
+  String get errorServer => 'Server error. Please try again later';
+
+  @override
+  String get errorUnknown => 'Something went wrong. Please try again';
+
+  @override
   String sectionResidentsCount(int count) {
     return 'Residents ($count)';
   }

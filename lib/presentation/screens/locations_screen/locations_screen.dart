@@ -9,6 +9,7 @@ import '../../../features/locations/domain/model/location.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
+import '../../../utils/app_error_utils.dart';
 import '../../widgets/grid_error_tile.dart';
 import '../../widgets/location_type_x.dart';
 import 'locations_screen_widget_model.dart';
@@ -68,11 +69,11 @@ class _LocationsBodyState extends State<_LocationsBody> {
       loadingBuilder: (_, _) => Center(
         child: CircularProgressIndicator(color: designs.primary),
       ),
-      errorBuilder: (_, _, _) => Center(
+      errorBuilder: (_, error, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: GridErrorTile(
-            message: l10n.errorLoadingLocations,
+            message: resolveAppError(error).localizedMessage(l10n),
             onRetry: widget.wm.retry,
           ),
         ),
@@ -127,17 +128,17 @@ class _LocationsBodyState extends State<_LocationsBody> {
                   );
                 },
               ),
-              ValueListenableBuilder<bool>(
-                valueListenable: widget.wm.hasError,
-                builder: (context, hasError, _) {
-                  if (!hasError || locations.isEmpty) {
+              ValueListenableBuilder(
+                valueListenable: widget.wm.error,
+                builder: (context, appError, _) {
+                  if (appError == null || locations.isEmpty) {
                     return const SliverToBoxAdapter();
                   }
                   return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: GridErrorTile(
-                        message: l10n.errorLoadingLocations,
+                        message: appError.localizedMessage(l10n),
                         onRetry: widget.wm.retry,
                       ),
                     ),

@@ -7,6 +7,8 @@ import 'package:flutter/widgets.dart';
 
 import '../../../di/di.dart';
 import '../../../features/episodes/domain/model/episode.dart';
+import '../../../services/app_error.dart';
+import '../../../utils/app_error_utils.dart';
 import 'episodes_screen.dart';
 import 'episodes_screen_model.dart';
 
@@ -21,7 +23,7 @@ class EpisodesWidgetModel
     implements IEpisodesWidgetModel {
   final _episodesState = EntityStateNotifier<List<Episode>>();
   final _loadingMoreState = ValueNotifier<bool>(false);
-  final _hasErrorState = ValueNotifier<bool>(false);
+  final _errorState = ValueNotifier<AppError?>(null);
   int _currentPage = 1;
   bool _hasNext = true;
 
@@ -35,7 +37,7 @@ class EpisodesWidgetModel
   ValueListenable<bool> get isLoadingMore => _loadingMoreState;
 
   @override
-  ValueListenable<bool> get hasError => _hasErrorState;
+  ValueListenable<AppError?> get error => _errorState;
 
   EpisodesWidgetModel(super._model);
 
@@ -49,7 +51,7 @@ class EpisodesWidgetModel
   void dispose() {
     _episodesState.dispose();
     _loadingMoreState.dispose();
-    _hasErrorState.dispose();
+    _errorState.dispose();
     super.dispose();
   }
 
@@ -58,7 +60,7 @@ class EpisodesWidgetModel
     if (!_hasNext || _loadingMoreState.value) return;
 
     _loadingMoreState.value = true;
-    _hasErrorState.value = false;
+    _errorState.value = null;
 
     try {
       final result = await model.getEpisodes(_currentPage);
@@ -67,7 +69,7 @@ class EpisodesWidgetModel
       _currentPage = result.page + 1;
       _hasNext = result.hasNext;
     } on Exception catch (e) {
-      _hasErrorState.value = true;
+      _errorState.value = resolveAppError(e);
       _episodesState.error(e, _episodesState.value.data);
     } finally {
       _loadingMoreState.value = false;
@@ -78,14 +80,14 @@ class EpisodesWidgetModel
   Future<void> refresh() async {
     _currentPage = 1;
     _hasNext = true;
-    _hasErrorState.value = false;
+    _errorState.value = null;
     _loadingMoreState.value = false;
     await _loadEpisodes();
   }
 
   @override
   Future<void> retry() async {
-    _hasErrorState.value = false;
+    _errorState.value = null;
     await _loadEpisodes();
   }
 
@@ -97,8 +99,9 @@ class EpisodesWidgetModel
       _episodesState.content(result.items);
       _currentPage = result.page + 1;
       _hasNext = result.hasNext;
+      _errorState.value = null;
     } on Exception catch (e) {
-      _hasErrorState.value = true;
+      _errorState.value = resolveAppError(e);
       _episodesState.error(e, _episodesState.value.data);
     }
   }
@@ -108,7 +111,7 @@ abstract interface class IEpisodesWidgetModel implements IWidgetModel {
   EntityValueListenable<List<Episode>> get episodesState;
   bool get hasNext;
   ValueListenable<bool> get isLoadingMore;
-  ValueListenable<bool> get hasError;
+  ValueListenable<AppError?> get error;
   Future<void> loadMore();
   Future<void> refresh();
   Future<void> retry();

@@ -2,6 +2,7 @@ import 'package:elementary_test/elementary_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rim_elementary/features/characters/domain/model/character.dart';
+import 'package:rim_elementary/services/app_error.dart';
 import 'package:rim_elementary/features/common/domain/model/page_result.dart';
 import 'package:rim_elementary/presentation/screens/characters_screen/characters_screen.dart';
 import 'package:rim_elementary/presentation/screens/characters_screen/characters_screen_model.dart';
@@ -67,7 +68,7 @@ void main() {
         expect(wm.charactersState.value.data!.length, 20);
         expect(wm.hasNext, true);
         expect(wm.isLoadingMore.value, false);
-        expect(wm.hasError.value, false);
+        expect(wm.error.value, isNull);
 
         verify(() => repository.getCharacters(1)).called(1);
       },
@@ -120,14 +121,14 @@ void main() {
     );
 
     testWidgetModel<CharactersWidgetModel, CharactersScreen>(
-      'loadMore sets hasError on exception',
+      'loadMore sets network error on AppException',
       setUpWm,
       (wm, tester, context) async {
         when(() => repository.getCharacters(1)).thenAnswer(
           (_) async => createPageResult(page: 1, hasNext: true),
         );
         when(() => repository.getCharacters(2)).thenThrow(
-          Exception('Network error'),
+          AppException(const AppError.network()),
         );
 
         tester.init();
@@ -136,7 +137,7 @@ void main() {
 
         await wm.loadMore();
 
-        expect(wm.hasError.value, true);
+        expect(wm.error.value, const AppError.network());
         expect(wm.isLoadingMore.value, false);
         expect(wm.charactersState.value.data!.length, 20);
       },
@@ -169,7 +170,7 @@ void main() {
 
         expect(wm.charactersState.value.data!.length, 10);
         expect(wm.hasNext, true);
-        expect(wm.hasError.value, false);
+        expect(wm.error.value, isNull);
 
         verify(() => repository.getCharacters(1)).called(2);
       },
@@ -180,14 +181,14 @@ void main() {
       setUpWm,
       (wm, tester, context) async {
         when(() => repository.getCharacters(1)).thenThrow(
-          Exception('Network error'),
+          AppException(const AppError.server()),
         );
 
         tester.init();
 
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
-        expect(wm.hasError.value, true);
+        expect(wm.error.value, const AppError.server());
 
         when(() => repository.getCharacters(1)).thenAnswer(
           (_) async => createPageResult(page: 1, hasNext: true),
@@ -196,7 +197,7 @@ void main() {
         await wm.retry();
 
         expect(wm.charactersState.value.data!.length, 20);
-        expect(wm.hasError.value, false);
+        expect(wm.error.value, isNull);
 
         verify(() => repository.getCharacters(1)).called(2);
       },

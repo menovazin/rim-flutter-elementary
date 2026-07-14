@@ -7,6 +7,8 @@ import 'package:flutter/widgets.dart';
 
 import '../../../di/di.dart';
 import '../../../features/locations/domain/model/location.dart';
+import '../../../services/app_error.dart';
+import '../../../utils/app_error_utils.dart';
 import 'locations_screen.dart';
 import 'locations_screen_model.dart';
 
@@ -21,7 +23,7 @@ class LocationsWidgetModel
     implements ILocationsWidgetModel {
   final _locationsState = EntityStateNotifier<List<Location>>();
   final _loadingMoreState = ValueNotifier<bool>(false);
-  final _hasErrorState = ValueNotifier<bool>(false);
+  final _errorState = ValueNotifier<AppError?>(null);
   int _currentPage = 1;
   bool _hasNext = true;
 
@@ -35,7 +37,7 @@ class LocationsWidgetModel
   ValueListenable<bool> get isLoadingMore => _loadingMoreState;
 
   @override
-  ValueListenable<bool> get hasError => _hasErrorState;
+  ValueListenable<AppError?> get error => _errorState;
 
   LocationsWidgetModel(super._model);
 
@@ -49,18 +51,16 @@ class LocationsWidgetModel
   void dispose() {
     _locationsState.dispose();
     _loadingMoreState.dispose();
-    _hasErrorState.dispose();
+    _errorState.dispose();
     super.dispose();
   }
 
   @override
   Future<void> loadMore() async {
-    if (!_hasNext || _loadingMoreState.value) {
-      return;
-    }
+    if (!_hasNext || _loadingMoreState.value) return;
 
     _loadingMoreState.value = true;
-    _hasErrorState.value = false;
+    _errorState.value = null;
 
     try {
       final result = await model.getLocations(_currentPage);
@@ -69,7 +69,7 @@ class LocationsWidgetModel
       _currentPage = result.page + 1;
       _hasNext = result.hasNext;
     } on Exception catch (e) {
-      _hasErrorState.value = true;
+      _errorState.value = resolveAppError(e);
       _locationsState.error(e, _locationsState.value.data);
     } finally {
       _loadingMoreState.value = false;
@@ -80,14 +80,14 @@ class LocationsWidgetModel
   Future<void> refresh() async {
     _currentPage = 1;
     _hasNext = true;
-    _hasErrorState.value = false;
+    _errorState.value = null;
     _loadingMoreState.value = false;
     await _loadLocations();
   }
 
   @override
   Future<void> retry() async {
-    _hasErrorState.value = false;
+    _errorState.value = null;
     await _loadLocations();
   }
 
@@ -99,8 +99,9 @@ class LocationsWidgetModel
       _locationsState.content(result.items);
       _currentPage = result.page + 1;
       _hasNext = result.hasNext;
+      _errorState.value = null;
     } on Exception catch (e) {
-      _hasErrorState.value = true;
+      _errorState.value = resolveAppError(e);
       _locationsState.error(e, _locationsState.value.data);
     }
   }
@@ -110,7 +111,7 @@ abstract interface class ILocationsWidgetModel implements IWidgetModel {
   EntityValueListenable<List<Location>> get locationsState;
   bool get hasNext;
   ValueListenable<bool> get isLoadingMore;
-  ValueListenable<bool> get hasError;
+  ValueListenable<AppError?> get error;
   Future<void> loadMore();
   Future<void> refresh();
   Future<void> retry();

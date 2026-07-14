@@ -9,6 +9,7 @@ import '../../../features/episodes/domain/model/episode.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
+import '../../../utils/app_error_utils.dart';
 import '../../widgets/episode_code_x.dart';
 import '../../widgets/grid_error_tile.dart';
 import 'episodes_screen_widget_model.dart';
@@ -68,11 +69,11 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
       loadingBuilder: (_, _) => Center(
         child: CircularProgressIndicator(color: designs.primary),
       ),
-      errorBuilder: (_, _, _) => Center(
+      errorBuilder: (_, error, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: GridErrorTile(
-            message: l10n.errorLoadingEpisodes,
+            message: resolveAppError(error).localizedMessage(l10n),
             onRetry: widget.wm.retry,
           ),
         ),
@@ -127,17 +128,17 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
                   );
                 },
               ),
-              ValueListenableBuilder<bool>(
-                valueListenable: widget.wm.hasError,
-                builder: (context, hasError, _) {
-                  if (!hasError || episodes.isEmpty) {
+              ValueListenableBuilder(
+                valueListenable: widget.wm.error,
+                builder: (context, appError, _) {
+                  if (appError == null || episodes.isEmpty) {
                     return const SliverToBoxAdapter();
                   }
                   return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: GridErrorTile(
-                        message: l10n.errorLoadingEpisodes,
+                        message: appError.localizedMessage(l10n),
                         onRetry: widget.wm.retry,
                       ),
                     ),
