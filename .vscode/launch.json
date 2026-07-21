@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "rim_flutter_elementary",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "rim_flutter_elementary (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "rim_flutter_elementary (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

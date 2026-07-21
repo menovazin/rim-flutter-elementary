@@ -38,9 +38,9 @@ class SplashWidgetModel extends WidgetModel<SplashScreen, SplashModel>
     await Future<void>.delayed(_preNavigationDelay);
 
     if (isAuthenticated) {
-      await _router.replace(const ShellRoute());
+      unawaited(_router.replace(const ShellRoute()));
     } else {
-      await _router.replace(const LoginRoute());
+      unawaited(_router.replace(const LoginRoute()));
     }
 
     await Future<void>.delayed(_postNavigationDelay);
