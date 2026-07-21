@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 
 import '../../../features/locations/domain/model/location.dart';
-import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/localization_helper.dart';
 import '../../../themes/app_theme.dart';
 import '../../widgets/character_avatar_circle.dart';
 import '../../widgets/location_type_x.dart';
@@ -22,7 +22,7 @@ class LocationDetailScreen
   Widget build(ILocationDetailWidgetModel wm) {
     return Builder(
       builder: (context) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = context.strings;
         final designs = context.designs;
         final dimension = location.dimension.isEmpty
             ? 'Unknown'

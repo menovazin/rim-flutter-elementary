@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rim_elementary/features/locations/domain/model/location.dart';
-import 'package:rim_elementary/l10n/generated/app_localizations.dart';
+import 'package:rim_elementary/l10n/localization_helper.dart';
 import 'package:rim_elementary/presentation/widgets/location_type_x.dart';
 
 void main() {
@@ -144,7 +144,7 @@ void main() {
                 const SizedBox(height: 24),
                 Builder(
                   builder: (context) {
-                    final l10n = AppLocalizations.of(context)!;
+                    final l10n = context.strings;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

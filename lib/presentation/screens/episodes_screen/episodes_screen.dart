@@ -6,7 +6,7 @@ import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../../features/episodes/domain/model/episode.dart';
-import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/localization_helper.dart';
 import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
 import '../../../utils/app_error_utils.dart';
@@ -61,7 +61,7 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.strings;
     final designs = context.designs;
 
     return EntityStateNotifierBuilder<List<Episode>>(

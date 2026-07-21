@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 
 import '../../../features/characters/domain/model/character.dart';
-import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/localization_helper.dart';
 import '../../../themes/app_theme.dart';
 import '../../../utils/avatar_url_utils.dart';
 import '../../widgets/character_gender_x.dart';
@@ -17,7 +17,7 @@ class CharacterDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.strings;
     final designs = context.designs;
     final imageUrl = AvatarUrlUtils.avatarUrlFromId(character.id);
 

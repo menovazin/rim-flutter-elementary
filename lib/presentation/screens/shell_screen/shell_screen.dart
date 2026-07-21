@@ -5,7 +5,7 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_drawer_menu/flutter_drawer_menu.dart';
 
-import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/localization_helper.dart';
 import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
 import 'shell_screen_widget_model.dart';
@@ -42,7 +42,7 @@ class _ShellBodyState extends State<_ShellBody> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.strings;
     final designs = context.designs;
     final titles = [
       l10n.tabCharacters,
@@ -122,7 +122,7 @@ class _Menu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final designs = context.designs;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.strings;
 
     return ColoredBox(
       color: designs.surface,

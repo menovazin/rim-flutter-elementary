@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pinch_to_zoom_scrollable/pinch_to_zoom_scrollable.dart';
 
 import '../../../features/episodes/domain/model/episode.dart';
-import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/localization_helper.dart';
 import '../../../themes/app_theme.dart';
 import '../../widgets/character_avatar_circle.dart';
 import '../../widgets/episode_code_x.dart';
@@ -21,7 +21,7 @@ class EpisodeDetailScreen extends ElementaryWidget<IEpisodeDetailWidgetModel> {
   Widget build(IEpisodeDetailWidgetModel wm) {
     return Builder(
       builder: (context) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = context.strings;
         final designs = context.designs;
 
         return Scaffold(

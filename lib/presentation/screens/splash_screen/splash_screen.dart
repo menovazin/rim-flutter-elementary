@@ -2,7 +2,7 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 
 import '../../../gen/assets.gen.dart';
-import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/localization_helper.dart';
 import '../../../themes/app_theme.dart';
 import 'splash_screen_widget_model.dart';
 
@@ -23,7 +23,7 @@ class _SplashBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.strings;
     final designs = context.designs;
 
     return Scaffold(

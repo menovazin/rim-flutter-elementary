@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rim_elementary/features/characters/domain/model/character.dart';
 import 'package:rim_elementary/features/episodes/domain/model/episode.dart';
 import 'package:rim_elementary/features/locations/domain/model/location.dart';
-import 'package:rim_elementary/l10n/generated/app_localizations.dart';
+import 'package:rim_elementary/l10n/localization_helper.dart';
 import 'package:rim_elementary/presentation/screens/character_detail_screen/character_detail_screen.dart';
 import 'package:rim_elementary/presentation/screens/episode_detail_screen/episode_detail_screen.dart';
 import 'package:rim_elementary/presentation/widgets/character_card.dart';
@@ -400,7 +400,7 @@ class _GoldenShellDrawerPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final designs = context.designs;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.strings;
 
     return ColoredBox(
       color: designs.surface,

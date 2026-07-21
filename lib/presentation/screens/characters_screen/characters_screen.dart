@@ -6,7 +6,7 @@ import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../../features/characters/domain/model/character.dart';
-import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/localization_helper.dart';
 import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
 import '../../../utils/app_error_utils.dart';
@@ -62,7 +62,7 @@ class _CharactersBodyState extends State<_CharactersBody> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = context.strings;
     final designs = context.designs;
 
     return EntityStateNotifierBuilder<List<Character>>(
