@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:elementary/elementary.dart';
 import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../../features/characters/domain/model/character.dart';
 import '../../../l10n/localization_helper.dart';
-import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
 import '../../../utils/app_error_utils.dart';
 import '../../../utils/grid_utils.dart';
@@ -83,7 +81,7 @@ class _CharactersBodyState extends State<_CharactersBody> {
         if (characters == null || characters.isEmpty) {
           return Center(
             child: Text(
-              l10n.tabCharacters,
+              l10n.emptyCharacters,
               style: context.textTheme.bodyLarge?.copyWith(
                 color: designs.textSecondary,
               ),
@@ -94,6 +92,7 @@ class _CharactersBodyState extends State<_CharactersBody> {
         return RefreshIndicator(
           onRefresh: widget.wm.refresh,
           child: CustomScrollView(
+            key: const PageStorageKey<String>('characters-scroll'),
             controller: _scrollController,
             slivers: [
               SliverPadding(
@@ -109,10 +108,9 @@ class _CharactersBodyState extends State<_CharactersBody> {
                     (context, index) {
                       final character = characters[index];
                       return CharacterCard(
+                        key: ValueKey(character.id),
                         character: character,
-                        onTap: () => context.router.push(
-                          CharacterDetailRoute(character: character),
-                        ),
+                        onTap: () => widget.wm.openCharacter(character),
                       );
                     },
                     childCount: characters.length,

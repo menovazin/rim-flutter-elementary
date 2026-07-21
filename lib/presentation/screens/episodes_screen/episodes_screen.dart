@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:elementary/elementary.dart';
 import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../../features/episodes/domain/model/episode.dart';
 import '../../../l10n/localization_helper.dart';
-import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
 import '../../../utils/app_error_utils.dart';
 import '../../widgets/episode_code_x.dart';
@@ -82,7 +80,7 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
         if (episodes == null || episodes.isEmpty) {
           return Center(
             child: Text(
-              l10n.tabEpisodes,
+              l10n.emptyEpisodes,
               style: context.textTheme.bodyLarge?.copyWith(
                 color: designs.textSecondary,
               ),
@@ -93,6 +91,7 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
         return RefreshIndicator(
           onRefresh: widget.wm.refresh,
           child: CustomScrollView(
+            key: const PageStorageKey<String>('episodes-scroll'),
             controller: _scrollController,
             slivers: [
               SliverPadding(
@@ -102,10 +101,9 @@ class _EpisodesBodyState extends State<_EpisodesBody> {
                     (context, index) {
                       final episode = episodes[index];
                       return _EpisodeListItem(
+                        key: ValueKey(episode.id),
                         episode: episode,
-                        onTap: () => context.router.push(
-                          EpisodeDetailRoute(episode: episode),
-                        ),
+                        onTap: () => widget.wm.openEpisode(episode),
                       );
                     },
                     childCount: episodes.length,
@@ -158,6 +156,7 @@ class _EpisodeListItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const _EpisodeListItem({
+    super.key,
     required this.episode,
     required this.onTap,
   });

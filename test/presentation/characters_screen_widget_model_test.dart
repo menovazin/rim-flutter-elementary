@@ -2,23 +2,50 @@ import 'package:elementary_test/elementary_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rim_elementary/features/characters/domain/model/character.dart';
-import 'package:rim_elementary/services/app_error.dart';
 import 'package:rim_elementary/features/common/domain/model/page_result.dart';
 import 'package:rim_elementary/presentation/screens/characters_screen/characters_screen.dart';
 import 'package:rim_elementary/presentation/screens/characters_screen/characters_screen_model.dart';
 import 'package:rim_elementary/presentation/screens/characters_screen/characters_screen_widget_model.dart';
+import 'package:rim_elementary/routes/router.gr.dart';
+import 'package:rim_elementary/services/app_error.dart';
 
+import '../mocks/app_router_mock.dart';
 import '../mocks/character_repository_mock.dart';
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(
+      CharacterDetailRoute(
+        character: const Character(
+          id: 0,
+          name: '',
+          status: '',
+          species: '',
+          type: '',
+          gender: '',
+          image: '',
+          originName: '',
+          originUrl: '',
+          locationName: '',
+          locationUrl: '',
+          episodeIds: [],
+        ),
+      ),
+    );
+  });
+
   late CharacterRepositoryMock repository;
+  late AppRouterMock router;
   late CharactersModel model;
 
   CharactersWidgetModel setUpWm() {
     repository = CharacterRepositoryMock();
+    router = AppRouterMock();
     model = CharactersModel(repository);
 
-    return CharactersWidgetModel(model);
+    when(() => router.push(any())).thenAnswer((_) async => null);
+
+    return CharactersWidgetModel(model, router);
   }
 
   Character createCharacter(int id) {
@@ -200,6 +227,26 @@ void main() {
         expect(wm.error.value, isNull);
 
         verify(() => repository.getCharacters(1)).called(2);
+      },
+    );
+
+    testWidgetModel<CharactersWidgetModel, CharactersScreen>(
+      'openCharacter pushes CharacterDetailRoute',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getCharacters(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: false, itemCount: 1),
+        );
+
+        tester.init();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        final character = wm.charactersState.value.data!.first;
+        wm.openCharacter(character);
+
+        verify(
+          () => router.push(CharacterDetailRoute(character: character)),
+        ).called(1);
       },
     );
   });

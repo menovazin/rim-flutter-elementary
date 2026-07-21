@@ -142,6 +142,24 @@ abstract class AppLocalizations {
   /// **'Locations'**
   String get tabLocations;
 
+  /// No description provided for @emptyCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'No characters yet'**
+  String get emptyCharacters;
+
+  /// No description provided for @emptyEpisodes.
+  ///
+  /// In en, this message translates to:
+  /// **'No episodes yet'**
+  String get emptyEpisodes;
+
+  /// No description provided for @emptyLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'No locations yet'**
+  String get emptyLocations;
+
   /// No description provided for @menuSignOut.
   ///
   /// In en, this message translates to:

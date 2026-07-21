@@ -15,6 +15,9 @@ class CustomDesigns extends ThemeExtension<CustomDesigns> {
   final Color textPrimary;
   final Color textSecondary;
   final Color textDisabled;
+  final Color statusAlive;
+  final Color statusDead;
+  final Color statusUnknown;
   final LinearGradient gradientButton;
   final LinearGradient gradientInactiveButton;
   final LinearGradient gradientAppBar;
@@ -33,6 +36,9 @@ class CustomDesigns extends ThemeExtension<CustomDesigns> {
     required this.textPrimary,
     required this.textSecondary,
     required this.textDisabled,
+    required this.statusAlive,
+    required this.statusDead,
+    required this.statusUnknown,
     required this.gradientButton,
     required this.gradientInactiveButton,
     required this.gradientAppBar,
@@ -54,6 +60,9 @@ class CustomDesigns extends ThemeExtension<CustomDesigns> {
       textPrimary: base.abyssBlack,
       textSecondary: const Color(0xFF6B7280),
       textDisabled: const Color(0xFF9CA3AF),
+      statusAlive: base.sunsetPeach,
+      statusDead: base.error,
+      statusUnknown: base.white,
       gradientButton: LinearGradient(
         colors: [const Color(0xFF28C76F), base.spicedBrick],
         begin: Alignment.centerLeft,
@@ -88,6 +97,9 @@ class CustomDesigns extends ThemeExtension<CustomDesigns> {
       textPrimary: base.vanillaCream,
       textSecondary: base.white,
       textDisabled: base.white.withValues(alpha: 0.5),
+      statusAlive: base.sunsetPeach,
+      statusDead: base.error,
+      statusUnknown: base.white,
       gradientButton: LinearGradient(
         colors: [base.sunsetPeach, base.spicedBrick],
         begin: Alignment.centerLeft,
@@ -121,6 +133,9 @@ class CustomDesigns extends ThemeExtension<CustomDesigns> {
     Color? textPrimary,
     Color? textSecondary,
     Color? textDisabled,
+    Color? statusAlive,
+    Color? statusDead,
+    Color? statusUnknown,
     LinearGradient? gradientButton,
     LinearGradient? gradientInactiveButton,
     LinearGradient? gradientAppBar,
@@ -139,6 +154,9 @@ class CustomDesigns extends ThemeExtension<CustomDesigns> {
       textPrimary: textPrimary ?? this.textPrimary,
       textSecondary: textSecondary ?? this.textSecondary,
       textDisabled: textDisabled ?? this.textDisabled,
+      statusAlive: statusAlive ?? this.statusAlive,
+      statusDead: statusDead ?? this.statusDead,
+      statusUnknown: statusUnknown ?? this.statusUnknown,
       gradientButton: gradientButton ?? this.gradientButton,
       gradientInactiveButton:
           gradientInactiveButton ?? this.gradientInactiveButton,
@@ -168,6 +186,9 @@ class CustomDesigns extends ThemeExtension<CustomDesigns> {
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
       textDisabled: Color.lerp(textDisabled, other.textDisabled, t)!,
+      statusAlive: Color.lerp(statusAlive, other.statusAlive, t)!,
+      statusDead: Color.lerp(statusDead, other.statusDead, t)!,
+      statusUnknown: Color.lerp(statusUnknown, other.statusUnknown, t)!,
       gradientButton: gradientButton,
       gradientInactiveButton: gradientInactiveButton,
       gradientAppBar: gradientAppBar,

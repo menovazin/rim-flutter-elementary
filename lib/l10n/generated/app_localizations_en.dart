@@ -33,6 +33,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabLocations => 'Locations';
 
   @override
+  String get emptyCharacters => 'No characters yet';
+
+  @override
+  String get emptyEpisodes => 'No episodes yet';
+
+  @override
+  String get emptyLocations => 'No locations yet';
+
+  @override
   String get menuSignOut => 'Sign Out';
 
   @override

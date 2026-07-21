@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../l10n/localization_helper.dart';
 import '../routes/router.dart';
 import '../services/theme_controller.dart';
 
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
       listenable: _themeController.themeType,
       builder: (context, _) {
         return MaterialApp.router(
-          title: 'Rick and Morty',
+          onGenerateTitle: (context) => context.strings.appTitle,
           debugShowCheckedModeBanner: false,
           theme: _themeController.themeData,
           routerConfig: _router.config(),

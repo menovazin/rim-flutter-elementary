@@ -28,16 +28,6 @@ class CharacterAvatarCircle extends StatelessWidget {
           fit: BoxFit.cover,
           placeholder: (_, _) => ColoredBox(
             color: designs.surface,
-            child: Center(
-              child: SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: designs.primary,
-                ),
-              ),
-            ),
           ),
           errorWidget: (_, _, _) => ColoredBox(
             color: designs.surface,

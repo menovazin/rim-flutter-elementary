@@ -1,12 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../config/urls.dart';
+import '../token_service.dart';
+import 'auth_interceptor.dart';
 
 @module
 abstract class DioFactory {
   @lazySingleton
-  Dio create() {
+  Dio create(ITokenService tokenService) {
     final dio = Dio(
       BaseOptions(
         baseUrl: AppUrls.base,
@@ -16,7 +19,13 @@ abstract class DioFactory {
       ),
     );
 
-    dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+    dio.interceptors.add(AuthInterceptor(tokenService));
+
+    if (kDebugMode) {
+      dio.interceptors.add(
+        LogInterceptor(requestBody: true, responseBody: true),
+      );
+    }
 
     return dio;
   }

@@ -3,22 +3,42 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rim_elementary/features/common/domain/model/page_result.dart';
 import 'package:rim_elementary/features/locations/domain/model/location.dart';
-import 'package:rim_elementary/services/app_error.dart';
 import 'package:rim_elementary/presentation/screens/locations_screen/locations_screen.dart';
 import 'package:rim_elementary/presentation/screens/locations_screen/locations_screen_model.dart';
 import 'package:rim_elementary/presentation/screens/locations_screen/locations_screen_widget_model.dart';
+import 'package:rim_elementary/routes/router.gr.dart';
+import 'package:rim_elementary/services/app_error.dart';
 
+import '../mocks/app_router_mock.dart';
 import '../mocks/location_repository_mock.dart';
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(
+      LocationDetailRoute(
+        location: const Location(
+          id: 0,
+          name: '',
+          type: '',
+          dimension: '',
+          residentIds: [],
+        ),
+      ),
+    );
+  });
+
   late LocationRepositoryMock repository;
+  late AppRouterMock router;
   late LocationsModel model;
 
   LocationsWidgetModel setUpWm() {
     repository = LocationRepositoryMock();
+    router = AppRouterMock();
     model = LocationsModel(repository);
 
-    return LocationsWidgetModel(model);
+    when(() => router.push(any())).thenAnswer((_) async => null);
+
+    return LocationsWidgetModel(model, router);
   }
 
   Location createLocation(int id) {
@@ -193,6 +213,26 @@ void main() {
         expect(wm.error.value, isNull);
 
         verify(() => repository.getLocations(1)).called(2);
+      },
+    );
+
+    testWidgetModel<LocationsWidgetModel, LocationsScreen>(
+      'openLocation pushes LocationDetailRoute',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getLocations(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: false, itemCount: 1),
+        );
+
+        tester.init();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        final location = wm.locationsState.value.data!.first;
+        wm.openLocation(location);
+
+        verify(
+          () => router.push(LocationDetailRoute(location: location)),
+        ).called(1);
       },
     );
   });

@@ -56,12 +56,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i218.ITokenService>(() => servicesModule.tokenService());
     gh.lazySingleton<_i897.AppRouter>(() => servicesModule.appRouter());
-    gh.lazySingleton<_i361.Dio>(() => dioFactory.create());
     gh.factory<_i1017.ThemeService>(
       () => _i1017.ThemeService(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i1045.ThemeController>(
       () => _i1045.ThemeController(gh<_i1017.ThemeService>()),
+    );
+    gh.lazySingleton<_i1044.IErrorHandler>(() => _i1044.TypedErrorHandler());
+    gh.lazySingleton<_i361.Dio>(
+      () => dioFactory.create(gh<_i218.ITokenService>()),
     );
     gh.factory<_i316.CharacterService>(
       () => servicesModule.characterService(gh<_i361.Dio>()),
@@ -72,7 +75,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i657.LocationService>(
       () => servicesModule.locationService(gh<_i361.Dio>()),
     );
-    gh.lazySingleton<_i1044.IErrorHandler>(() => _i1044.TypedErrorHandler());
     gh.lazySingleton<_i568.IEpisodeRepository>(
       () => _i963.EpisodeRepository(
         gh<_i861.EpisodeService>(),

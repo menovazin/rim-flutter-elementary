@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rim_elementary/features/characters/domain/model/character.dart';
 import 'package:rim_elementary/presentation/widgets/character_status_x.dart';
+import 'package:rim_elementary/themes/extensions/custom_designs.dart';
 
 void main() {
+  final designs = CustomDesigns.light();
+
   const base = Character(
     id: 1,
     name: 'Rick',
@@ -20,11 +22,11 @@ void main() {
   );
 
   group('CharacterStatusX', () {
-    test('statusColor is green for alive', () {
-      expect(base.statusColor, const Color(0xFF34E27A));
+    test('statusColorOf is statusAlive for alive', () {
+      expect(base.statusColorOf(designs), designs.statusAlive);
     });
 
-    test('statusColor is red for dead', () {
+    test('statusColorOf is statusDead for dead', () {
       const dead = Character(
         id: 2,
         name: 'Birdperson',
@@ -39,10 +41,10 @@ void main() {
         locationUrl: '',
         episodeIds: [],
       );
-      expect(dead.statusColor, const Color(0xFFE5484D));
+      expect(dead.statusColorOf(designs), designs.statusDead);
     });
 
-    test('statusColor is grey for unknown', () {
+    test('statusColorOf is statusUnknown for unknown', () {
       const unknown = Character(
         id: 3,
         name: 'Unknown',
@@ -57,7 +59,7 @@ void main() {
         locationUrl: '',
         episodeIds: [],
       );
-      expect(unknown.statusColor, const Color(0xFF9DB5B1));
+      expect(unknown.statusColorOf(designs), designs.statusUnknown);
     });
   });
 }

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../../features/characters/domain/model/character.dart';
+import '../../themes/extensions/custom_designs.dart';
 
 extension CharacterStatusX on Character {
-  Color get statusColor {
+  Color statusColorOf(CustomDesigns designs) {
     switch (status.toLowerCase()) {
       case 'alive':
-        return const Color(0xFF34E27A);
+        return designs.statusAlive;
       case 'dead':
-        return const Color(0xFFE5484D);
+        return designs.statusDead;
       default:
-        return const Color(0xFF9DB5B1);
+        return designs.statusUnknown;
     }
   }
 }

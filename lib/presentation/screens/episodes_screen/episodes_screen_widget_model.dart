@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:elementary/elementary.dart';
 import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/foundation.dart';
@@ -7,103 +8,64 @@ import 'package:flutter/widgets.dart';
 
 import '../../../di/di.dart';
 import '../../../features/episodes/domain/model/episode.dart';
+import '../../../routes/router.gr.dart';
 import '../../../services/app_error.dart';
-import '../../../utils/app_error_utils.dart';
+import '../../controllers/paged_list_controller.dart';
 import 'episodes_screen.dart';
 import 'episodes_screen_model.dart';
 
 EpisodesWidgetModel episodesWidgetModelFactory(BuildContext context) {
   return EpisodesWidgetModel(
     EpisodesModel(di.episodeRepository),
+    di.appRouter,
   );
 }
 
-class EpisodesWidgetModel
-    extends WidgetModel<EpisodesScreen, EpisodesModel>
+class EpisodesWidgetModel extends WidgetModel<EpisodesScreen, EpisodesModel>
     implements IEpisodesWidgetModel {
-  final _episodesState = EntityStateNotifier<List<Episode>>();
-  final _loadingMoreState = ValueNotifier<bool>(false);
-  final _errorState = ValueNotifier<AppError?>(null);
-  int _currentPage = 1;
-  bool _hasNext = true;
+  final StackRouter _router;
+  late final PagedListController<Episode> _controller;
+
+  EpisodesWidgetModel(super._model, this._router) {
+    _controller = PagedListController(fetch: model.getEpisodes);
+  }
 
   @override
-  EntityValueListenable<List<Episode>> get episodesState => _episodesState;
+  EntityValueListenable<List<Episode>> get episodesState => _controller.state;
 
   @override
-  bool get hasNext => _hasNext;
+  bool get hasNext => _controller.hasNext;
 
   @override
-  ValueListenable<bool> get isLoadingMore => _loadingMoreState;
+  ValueListenable<bool> get isLoadingMore => _controller.isLoadingMore;
 
   @override
-  ValueListenable<AppError?> get error => _errorState;
-
-  EpisodesWidgetModel(super._model);
+  ValueListenable<AppError?> get error => _controller.error;
 
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    unawaited(_loadEpisodes());
+    unawaited(_controller.loadInitial());
   }
 
   @override
   void dispose() {
-    _episodesState.dispose();
-    _loadingMoreState.dispose();
-    _errorState.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
-  Future<void> loadMore() async {
-    if (!_hasNext || _loadingMoreState.value) return;
-
-    _loadingMoreState.value = true;
-    _errorState.value = null;
-
-    try {
-      final result = await model.getEpisodes(_currentPage);
-      final currentItems = _episodesState.value.data ?? [];
-      _episodesState.content([...currentItems, ...result.items]);
-      _currentPage = result.page + 1;
-      _hasNext = result.hasNext;
-    } on Exception catch (e) {
-      _errorState.value = resolveAppError(e);
-      _episodesState.error(e, _episodesState.value.data);
-    } finally {
-      _loadingMoreState.value = false;
-    }
-  }
+  Future<void> loadMore() => _controller.loadMore();
 
   @override
-  Future<void> refresh() async {
-    _currentPage = 1;
-    _hasNext = true;
-    _errorState.value = null;
-    _loadingMoreState.value = false;
-    await _loadEpisodes();
-  }
+  Future<void> refresh() => _controller.refresh();
 
   @override
-  Future<void> retry() async {
-    _errorState.value = null;
-    await _loadEpisodes();
-  }
+  Future<void> retry() => _controller.retry();
 
-  Future<void> _loadEpisodes() async {
-    _episodesState.loading(_episodesState.value.data);
-
-    try {
-      final result = await model.getEpisodes(_currentPage);
-      _episodesState.content(result.items);
-      _currentPage = result.page + 1;
-      _hasNext = result.hasNext;
-      _errorState.value = null;
-    } on Exception catch (e) {
-      _errorState.value = resolveAppError(e);
-      _episodesState.error(e, _episodesState.value.data);
-    }
+  @override
+  void openEpisode(Episode episode) {
+    unawaited(_router.push(EpisodeDetailRoute(episode: episode)));
   }
 }
 
@@ -115,4 +77,5 @@ abstract interface class IEpisodesWidgetModel implements IWidgetModel {
   Future<void> loadMore();
   Future<void> refresh();
   Future<void> retry();
+  void openEpisode(Episode episode);
 }

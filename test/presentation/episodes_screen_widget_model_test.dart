@@ -3,22 +3,42 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rim_elementary/features/common/domain/model/page_result.dart';
 import 'package:rim_elementary/features/episodes/domain/model/episode.dart';
-import 'package:rim_elementary/services/app_error.dart';
 import 'package:rim_elementary/presentation/screens/episodes_screen/episodes_screen.dart';
 import 'package:rim_elementary/presentation/screens/episodes_screen/episodes_screen_model.dart';
 import 'package:rim_elementary/presentation/screens/episodes_screen/episodes_screen_widget_model.dart';
+import 'package:rim_elementary/routes/router.gr.dart';
+import 'package:rim_elementary/services/app_error.dart';
 
+import '../mocks/app_router_mock.dart';
 import '../mocks/episode_repository_mock.dart';
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(
+      EpisodeDetailRoute(
+        episode: const Episode(
+          id: 0,
+          name: '',
+          episodeCode: '',
+          airDate: '',
+          characterIds: [],
+        ),
+      ),
+    );
+  });
+
   late EpisodeRepositoryMock repository;
+  late AppRouterMock router;
   late EpisodesModel model;
 
   EpisodesWidgetModel setUpWm() {
     repository = EpisodeRepositoryMock();
+    router = AppRouterMock();
     model = EpisodesModel(repository);
 
-    return EpisodesWidgetModel(model);
+    when(() => router.push(any())).thenAnswer((_) async => null);
+
+    return EpisodesWidgetModel(model, router);
   }
 
   Episode createEpisode(int id) {
@@ -193,6 +213,26 @@ void main() {
         expect(wm.error.value, isNull);
 
         verify(() => repository.getEpisodes(1)).called(2);
+      },
+    );
+
+    testWidgetModel<EpisodesWidgetModel, EpisodesScreen>(
+      'openEpisode pushes EpisodeDetailRoute',
+      setUpWm,
+      (wm, tester, context) async {
+        when(() => repository.getEpisodes(1)).thenAnswer(
+          (_) async => createPageResult(page: 1, hasNext: false, itemCount: 1),
+        );
+
+        tester.init();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        final episode = wm.episodesState.value.data!.first;
+        wm.openEpisode(episode);
+
+        verify(
+          () => router.push(EpisodeDetailRoute(episode: episode)),
+        ).called(1);
       },
     );
   });

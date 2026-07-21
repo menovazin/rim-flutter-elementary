@@ -196,7 +196,37 @@ ThemeData _darkThemeData({String? fontFamily}) {
     dividerColor: design.primary,
     canvasColor: design.primary,
     textButtonTheme: TextButtonThemeData(style: styleFrom),
-    elevatedButtonTheme: ElevatedButtonThemeData(style: styleFrom),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: design.primary,
+        foregroundColor: design.onPrimary,
+        textStyle: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: design.surface,
+      labelStyle: TextStyle(color: design.textSecondary),
+      prefixIconColor: design.textSecondary,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: design.textSecondary.withValues(alpha: 0.3),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: design.primary),
+      ),
+    ),
     colorScheme: colorScheme.copyWith(
       surface: design.primary,
     ),

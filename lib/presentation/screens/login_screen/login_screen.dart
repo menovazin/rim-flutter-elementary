@@ -39,6 +39,7 @@ class _LoginBodyState extends State<_LoginBody> {
   Widget build(BuildContext context) {
     final l10n = context.strings;
     final designs = context.designs;
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: designs.background,
@@ -80,26 +81,12 @@ class _LoginBodyState extends State<_LoginBody> {
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) =>
                         widget.wm.signIn(_usernameController.text),
-                    style: TextStyle(color: designs.textPrimary),
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: designs.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       labelText: l10n.loginNameLabel,
-                      labelStyle: TextStyle(color: designs.textSecondary),
-                      filled: true,
-                      fillColor: designs.surface,
-                      prefixIcon: Icon(
-                        Icons.person_outline,
-                        color: designs.textSecondary,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: designs.textSecondary.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: designs.primary),
-                      ),
+                      prefixIcon: const Icon(Icons.person_outline),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -108,21 +95,7 @@ class _LoginBodyState extends State<_LoginBody> {
                     child: ElevatedButton(
                       onPressed: () =>
                           widget.wm.signIn(_usernameController.text),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: designs.primary,
-                        foregroundColor: designs.onPrimary,
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text(
-                        l10n.loginSignInButton,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      child: Text(l10n.loginSignInButton),
                     ),
                   ),
                 ],

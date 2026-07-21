@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:elementary/elementary.dart';
 import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../../features/locations/domain/model/location.dart';
 import '../../../l10n/localization_helper.dart';
-import '../../../routes/router.gr.dart';
 import '../../../themes/app_theme.dart';
 import '../../../utils/app_error_utils.dart';
 import '../../widgets/grid_error_tile.dart';
@@ -82,7 +80,7 @@ class _LocationsBodyState extends State<_LocationsBody> {
         if (locations == null || locations.isEmpty) {
           return Center(
             child: Text(
-              l10n.tabLocations,
+              l10n.emptyLocations,
               style: context.textTheme.bodyLarge?.copyWith(
                 color: designs.textSecondary,
               ),
@@ -93,6 +91,7 @@ class _LocationsBodyState extends State<_LocationsBody> {
         return RefreshIndicator(
           onRefresh: widget.wm.refresh,
           child: CustomScrollView(
+            key: const PageStorageKey<String>('locations-scroll'),
             controller: _scrollController,
             slivers: [
               SliverPadding(
@@ -102,10 +101,9 @@ class _LocationsBodyState extends State<_LocationsBody> {
                     (context, index) {
                       final location = locations[index];
                       return _LocationListItem(
+                        key: ValueKey(location.id),
                         location: location,
-                        onTap: () => context.router.push(
-                          LocationDetailRoute(location: location),
-                        ),
+                        onTap: () => widget.wm.openLocation(location),
                       );
                     },
                     childCount: locations.length,
@@ -158,6 +156,7 @@ class _LocationListItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const _LocationListItem({
+    super.key,
     required this.location,
     required this.onTap,
   });
