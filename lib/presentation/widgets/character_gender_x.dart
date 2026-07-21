@@ -15,17 +15,4 @@ extension CharacterGenderX on Character {
         return Icons.question_mark;
     }
   }
-
-  String get genderSymbol {
-    switch (gender.toLowerCase()) {
-      case 'male':
-        return '♂';
-      case 'female':
-        return '♀';
-      case 'genderless':
-        return '⚪';
-      default:
-        return '?';
-    }
-  }
 }

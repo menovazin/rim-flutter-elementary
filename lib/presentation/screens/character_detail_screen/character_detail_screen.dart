@@ -94,7 +94,12 @@ class CharacterDetailScreen extends StatelessWidget {
                 ),
               DetailInfoRow(
                 label: l10n.detailGender,
-                value: '${character.genderSymbol}  ${character.gender}',
+                value: character.gender,
+                leading: Icon(
+                  character.genderIcon,
+                  size: 18,
+                  color: designs.textPrimary,
+                ),
               ),
               DetailInfoRow(
                 label: l10n.detailOrigin,
